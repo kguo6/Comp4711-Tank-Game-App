@@ -10,6 +10,8 @@ var mongo = require('mongodb').MongoClient;
 // App constants 
 app.set('PORT', 8888);
 app.set('DB', 'test');
+app.set('DB_ADMIN', 'tank_admin');
+app.set('DB_ADMIN_PASSWORD', 'yEUgZtyWAy4QC9Tc');
 
 app.use('/static', express.static(__dirname + '/static'));
 
@@ -26,7 +28,7 @@ var options = {
 };
 
 // Establish db connection
-mongo.connect(`mongodb://localhost:27017/${app.get('DB')}`, options, (err, client) => {
+mongo.connect(`mongodb+srv://${app.get('DB_ADMIN')}:${app.get('DB_ADMIN_PASSWORD')}@cluster0-3rcql.mongodb.net/${app.get('DB')}?retryWrites=true&authMechanism=SCRAM-SHA-1&authSource=admin`, options, (err, client) => {
     
     if (err) {
         console.log(err.stack);
@@ -37,7 +39,7 @@ mongo.connect(`mongodb://localhost:27017/${app.get('DB')}`, options, (err, clien
     app.set('DBO', client.db(app.get('DB')));
 
     // example
-    // app.get('DBO').collection('players').insertOne({ name: 'kevin' }, (err, result) => {
+    // app.get('DBO').collection('scores').insertOne({ name: 'kevin', score: 42 }, (err, result) => {
     //     if (err) {
     //         console.log(err);
     //     }
