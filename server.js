@@ -7,32 +7,35 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-app.set('port', 80);
+app.set('port', 8888);
 app.use('/static', express.static(__dirname + '/static'));
 // Routing
 app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });
 // Starts the server.
-server.listen(80, function() {
-  console.log('Starting server on port 80');
-});
-
-io.on('connection', function(socket) {
+server.listen(8888, function() {
+  console.log('Starting server on port 8888');
 });
 
 // setInterval(function() {
 //     io.sockets.emit('message', 'hi!');
 //   }, 1000);
 
-  var players = {};
+var players = {};
 io.on('connection', function(socket) {
   socket.on('new player', function() {
+    console.log(socket.id);
     players[socket.id] = {
       x: 300,
       y: 300
     };
   });
+
+  socket.on('disconnect', function() {
+    delete players[socket.id];
+  });
+
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
     if (data.left) {
@@ -49,6 +52,7 @@ io.on('connection', function(socket) {
     }
   });
 });
+
 setInterval(function() {
   io.sockets.emit('state', players);
-}, 1000 / 120);
+}, 1000 / 60);
