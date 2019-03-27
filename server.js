@@ -1,11 +1,15 @@
 var express = require('express');
 var http = require('http');
 var path = require('path');
+var bodyParser = require('body-parser');
 var socketIO = require('socket.io');
 var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 var mongo = require('mongodb').MongoClient;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // App constants 
 app.set('PORT', 8888);
@@ -20,8 +24,13 @@ app.get('/', function (request, response) {
     response.sendFile(path.join(__dirname, 'index.html'));
 });
 
+const socials = require('./routes/social_media_routes');
+
+// Register API routes
+app.use('/social_media', socials);
+
 // Set db connection options
-var options = {
+let options = {
     useNewUrlParser: true,
     reconnectTries: 60,
     reconnectInterval: 1000
