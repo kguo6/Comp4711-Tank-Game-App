@@ -25,10 +25,12 @@ server.listen(8888, function() {
 var players = {};
 io.on('connection', function(socket) {
   socket.on('new player', function() {
-    console.log(socket.id);
+    // console.log(socket.id);
     players[socket.id] = {
       x: 300,
-      y: 300
+      y: 300,
+      rotate: 0,
+      speed: 3
     };
   });
 
@@ -38,17 +40,24 @@ io.on('connection', function(socket) {
 
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
+
     if (data.left) {
-      player.x -= 5;
-    }
-    if (data.up) {
-      player.y -= 5;
+      // player.x -= 5;
+      player.rotate -= player.speed * Math.PI/180;
     }
     if (data.right) {
-      player.x += 5;
+      // player.x += 5;
+      player.rotate += player.speed * Math.PI/180;
     }
+
+    if (data.up) {
+      player.x += player.speed * Math.cos(player.rotate);
+      player.y += player.speed * Math.sin(player.rotate);
+    }
+
     if (data.down) {
-      player.y += 5;
+      player.x -= player.speed * Math.cos(player.rotate);
+      player.y -= player.speed * Math.sin(player.rotate);
     }
   });
 });

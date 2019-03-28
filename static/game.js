@@ -63,8 +63,17 @@ socket.on('state', function(players) {
   for (var id in players) {
     var player = players[id];
     context.beginPath();
-    context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
+    context.save();
+    context.translate(player.x + 20, player.y + 10);
+    context.rotate(player.rotate)
+    // console.log(players[id].rotate);
+    context.translate(-(player.x + 20), -(player.y + 10));
+    // context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
+
+    context.rect(player.x, player.y, 40, 20)
     context.fill();
+    context.restore();
+
   }
 });
 
