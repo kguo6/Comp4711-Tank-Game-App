@@ -23,6 +23,7 @@ server.listen(8888, function() {
 //   }, 1000);
 
 var players = {};
+var shots = {};
 io.on('connection', function(socket) {
   socket.on('new player', function() {
     // console.log(socket.id);
@@ -30,7 +31,10 @@ io.on('connection', function(socket) {
       x: 300,
       y: 300,
       rotate: 0,
-      speed: 3
+      speed: 3,
+      width: 40,
+      height: 35,
+      range: 800
     };
   });
 
@@ -60,8 +64,19 @@ io.on('connection', function(socket) {
       player.y -= player.speed * Math.sin(player.rotate);
     }
   });
+
+  socket.on('shoot', function(){
+    var player = players[socket.id] || {};
+    var d = new Date();
+    var n = d.getTime();
+    shots[n] = {
+      x: player.x,
+      y: player.y
+    }    
+  });
 });
 
+
 setInterval(function() {
-  io.sockets.emit('state', players);
+  io.sockets.emit('state', players, shots);
 }, 1000 / 60);

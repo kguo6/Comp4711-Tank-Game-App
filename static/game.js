@@ -28,6 +28,9 @@ document.addEventListener('keydown', function(event) {
       case 83: // S
         movement.down = true;
         break;
+      case 32:
+        socket.emit('shoot');
+        break;
     }
 });
 
@@ -44,7 +47,7 @@ document.addEventListener('keyup', function(event) {
         break;
       case 83: // S
         movement.down = false;
-        break;
+        break;        
     }
 }); 
 
@@ -53,27 +56,44 @@ setInterval(function() {
   socket.emit('movement', movement);
 }, 1000 / 60);
 
+function drawTank(player){
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+  context.fillStyle = 'green';
+  context.translate(player.x + player.width/2, player.y + player.height/2);
+  context.rotate(player.rotate);
+  context.translate(-(player.x + player.width/2), -(player.y + player.height/2));
+  context.fillRect(player.x, player.y, player.width, player.height);
+  context.fillStyle = 'black';
+  context.fillRect(player.x + player.width/2 + 5, player.y + player.height/2 - 2.5, 30, 5);
+  
+
+}
+
 var canvas = document.getElementById('canvas');
 canvas.width = 800;
 canvas.height = 600;
 var context = canvas.getContext('2d');
-socket.on('state', function(players) {
+socket.on('state', function(players, shots) {
   context.clearRect(0, 0, 800, 600);
-  context.fillStyle = 'green';
   for (var id in players) {
     var player = players[id];
     context.beginPath();
     context.save();
-    context.translate(player.x + 20, player.y + 10);
-    context.rotate(player.rotate)
-    // console.log(players[id].rotate);
-    context.translate(-(player.x + 20), -(player.y + 10));
-    // context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
-
-    context.rect(player.x, player.y, 40, 20)
-    context.fill();
+    drawTank(player);
     context.restore();
+  }
 
+  for(var shot in shots){
+    context.fillRect(shot.x, shot.y, 5, 5);
   }
 });
+
+function getMousePos(canvas, evt) {
+  var rect = canvas.getBoundingClientRect();
+  return {
+      x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+      y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+  };
+}
 
