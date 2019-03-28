@@ -26,7 +26,6 @@ var players = {};
 var shots = {};
 io.on('connection', function(socket) {
   socket.on('new player', function() {
-    // console.log(socket.id);
     players[socket.id] = {
       x: 300,
       y: 300,
@@ -70,13 +69,13 @@ io.on('connection', function(socket) {
     var d = new Date();
     var n = d.getTime();
     shots[n] = {
-      x: player.x,
-      y: player.y
+      x: player.x + player.width/2,
+      y: player.y + player.height/2 - 2.5
     }    
   });
 });
 
 
 setInterval(function() {
-  io.sockets.emit('state', players, shots);
+  io.sockets.emit('state', {players, shots});
 }, 1000 / 60);

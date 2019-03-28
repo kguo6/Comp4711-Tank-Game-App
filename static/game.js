@@ -74,21 +74,22 @@ var canvas = document.getElementById('canvas');
 canvas.width = 800;
 canvas.height = 600;
 var context = canvas.getContext('2d');
-socket.on('state', function(players, shots) {
+socket.on('state', function(state) {
   context.clearRect(0, 0, 800, 600);
-  for (var id in players) {
-    var player = players[id];
+  for (var id in state.players) {
+    var player = state.players[id];
     context.beginPath();
     context.save();
     drawTank(player);
     context.restore();
   }
 
-  for(var shot in shots){
+  for(var id in state.shots){
+    var shot = state.shots[id];
+    context.beginPath();
     context.fillRect(shot.x, shot.y, 5, 5);
   }
 });
-
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
   return {
