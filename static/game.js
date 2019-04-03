@@ -69,13 +69,19 @@ function drawTank(player){
   context.fillRect(player.x + player.width/2 + 5, player.y + player.height/2 - 2.5, 30, 5);
 }
 
-function drawHp(player) {
-  // Draw Healthbar
+function drawTankStats(player) {
+  // Draw Hp
   let currentHp = player.hp / 3;
   context.fillStyle = 'red';
   context.fillRect(player.x, player.y + player.height + 12, player.width, 5);
   context.fillStyle = 'LightGreen';
   context.fillRect(player.x, player.y + player.height + 12, player.width * currentHp, 5);
+
+  // Draw Player Name
+  context.fillStyle = 'black'
+  context.font = '12px Arial';
+  context.textAlign = 'center';
+  context.fillText(player.name, player.x + 15, player.y - 12);
 }
 
 var canvas = document.getElementById('canvas');
@@ -91,8 +97,7 @@ socket.on('state', function(state) {
     drawTank(player);
     context.restore();
     context.save();
-    drawHp(player);
-
+    drawTankStats(player);
   }
 
   for(var id in state.shots){
