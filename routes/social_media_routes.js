@@ -28,7 +28,7 @@ router.post('/postslack', (req, res) => {
                 console.log(result.status, result);
                 res.status(result.status).send(result.statusText);
             } else {
-                res.status(200).send(result.statusText);
+                res.redirect('http://kennyguo.com/static');
             }
         })
         .catch((error) => {
