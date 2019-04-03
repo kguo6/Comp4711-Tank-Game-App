@@ -59,6 +59,7 @@ setInterval(function() {
 function drawTank(player){
   var canvas = document.getElementById('canvas');
   var context = canvas.getContext('2d');
+
   context.fillStyle = 'green';
   context.translate(player.x + player.width/2, player.y + player.height/2);
   context.rotate(player.rotate);
@@ -66,8 +67,15 @@ function drawTank(player){
   context.fillRect(player.x, player.y, player.width, player.height);
   context.fillStyle = 'black';
   context.fillRect(player.x + player.width/2 + 5, player.y + player.height/2 - 2.5, 30, 5);
-  
+}
 
+function drawHp(player) {
+  // Draw Healthbar
+  let currentHp = player.hp / 3;
+  context.fillStyle = 'red';
+  context.fillRect(player.x, player.y + player.height + 12, player.width, 5);
+  context.fillStyle = 'LightGreen';
+  context.fillRect(player.x, player.y + player.height + 12, player.width * currentHp, 5);
 }
 
 var canvas = document.getElementById('canvas');
@@ -82,6 +90,9 @@ socket.on('state', function(state) {
     context.save();
     drawTank(player);
     context.restore();
+    context.save();
+    drawHp(player);
+
   }
 
   for(var id in state.shots){

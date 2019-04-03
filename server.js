@@ -27,6 +27,8 @@ var shots = {};
 io.on('connection', function(socket) {
   socket.on('new player', function() {
     players[socket.id] = {
+      name: socket.id, // Connect with userName
+      hp: 1, 
       x: 300,
       y: 300,
       rotate: 0,
