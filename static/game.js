@@ -1,4 +1,7 @@
 var socket = io();
+
+let currentPlayer ={};
+
 socket.on('message', function(data) {
   console.log(data);
 });
@@ -88,6 +91,9 @@ var canvas = document.getElementById('canvas');
 canvas.width = 800;
 canvas.height = 600;
 var context = canvas.getContext('2d');
+
+
+
 socket.on('state', function(state) {
   context.clearRect(0, 0, 800, 600);
   for (var id in state.players) {
@@ -105,7 +111,21 @@ socket.on('state', function(state) {
     context.beginPath();
     context.fillRect(shot.x, shot.y, 5, 5);
   }
+  socket.emit('move shot');
 });
+
+
+socket.on('player state', function(player){
+  currentPlayer = player;
+  console.log("player state");
+});
+
+function die(){
+  socket.emit('died');
+  console.log(currentPlayer);
+}
+
+
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
   return {
