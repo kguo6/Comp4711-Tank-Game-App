@@ -31,9 +31,10 @@ io.on('connection', function(socket) {
       y: 300,
       rotate: 0,
       speed: 3,
+      shot_speed: 9,
       width: 40,
       height: 35,
-      range: 800
+      range: 500
     };
   });
 
@@ -67,15 +68,40 @@ io.on('connection', function(socket) {
   socket.on('shoot', function(){
     var player = players[socket.id] || {};
     var d = new Date();
-    var n = d.getTime();
-    shots[n] = {
-      x: player.x + player.width/2,
-      y: player.y + player.height/2 - 2.5
-    }    
+    if(!shots[socket.id]){
+      shots[socket.id] = {
+        player: socket.id,
+        x: player.x + player.width/2,
+        y: player.y + player.height/2 - 2.5,
+        xvel: player.shot_speed * Math.cos(player.rotate),
+        yvel: player.shot_speed * Math.sin(player.rotate),
+        distance: 0,
+        max_distance: player.range
+      } 
+    }
   });
+
+  socket.on('died', function(){
+    let player = players[socket.id];
+    socket.emit('player state', player);
+  });
+
+  socket.on('move shot', function(){
+    for(let id in shots){
+      let shot = shots[id]
+      // console.log(Math.sqrt(shot.xvel * shot.xvel + shot.yvel * shot.yvel))
+      if(shot.distance < shot.max_distance){
+        shot.x += shot.xvel;
+        shot.y += shot.yvel;
+        shot.distance += Math.sqrt(shot.xvel * shot.xvel + shot.yvel * shot.yvel);
+      } else{
+        delete shots[shot.player];
+      }
+    }
+  })
 });
 
 
 setInterval(function() {
-  io.sockets.emit('state', {players, shots});
+  io.sockets.emit('state', { players, shots });
 }, 1000 / 60);
