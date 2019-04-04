@@ -19,16 +19,16 @@ let movement = {
 
 document.addEventListener('keydown', function (event) {
     switch (event.keyCode) {
-        case 65: // A
+        case 37: // A
             movement.left = true;
             break;
-        case 87: // W
+        case 38: // W
             movement.up = true;
             break;
-        case 68: // D
+        case 39: // D
             movement.right = true;
             break;
-        case 83: // S
+        case 40: // S
             movement.down = true;
             break;
         case 32:
@@ -39,16 +39,16 @@ document.addEventListener('keydown', function (event) {
 
 document.addEventListener('keyup', function (event) {
     switch (event.keyCode) {
-        case 65: // A
+        case 37: // A
             movement.left = false;
             break;
-        case 87: // W
+        case 38: // W
             movement.up = false;
             break;
-        case 68: // D
+        case 39: // D
             movement.right = false;
             break;
-        case 83: // S
+        case 40: // S
             movement.down = false;
             break;
     }
