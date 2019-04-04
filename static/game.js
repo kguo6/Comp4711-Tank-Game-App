@@ -60,8 +60,10 @@ document.getElementById("play-again").addEventListener("click", () => {
     if (currentPlayer) {
         console.log(currentPlayer);
 
-        // TODO: wrap-up game logic 
-        location.reload();
+        // TODO: wrap-up game logic
+        setTimeout(() => { // TEMP
+            location.reload();
+        }, 1500);
     }
 });
 
@@ -154,7 +156,6 @@ socket.on('player state', function (player) {
 
 function die() {
     socket.emit('died');
-    setTimeout(1000);
     modal.style.display = "block";
 }
 
