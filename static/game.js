@@ -19,36 +19,41 @@ let movement = {
 
 document.addEventListener('keydown', function (event) {
     switch (event.keyCode) {
-        case 37: // A
+        case 37: // left arrow
             movement.left = true;
+            event.preventDefault();
             break;
-        case 38: // W
+        case 38: // up arrow
             movement.up = true;
+            event.preventDefault();
             break;
-        case 39: // D
+        case 39: // right arrow
             movement.right = true;
+            event.preventDefault();
             break;
-        case 40: // S
+        case 40: // down arrow
             movement.down = true;
+            event.preventDefault();
             break;
         case 32:
             socket.emit('shoot');
+            event.preventDefault();
             break;
     }
 });
 
 document.addEventListener('keyup', function (event) {
     switch (event.keyCode) {
-        case 37: // A
+        case 37: // left arrow
             movement.left = false;
             break;
-        case 38: // W
+        case 38: // up arrow
             movement.up = false;
             break;
-        case 39: // D
+        case 39: // right arrow
             movement.right = false;
             break;
-        case 40: // S
+        case 40: // down arrow
             movement.down = false;
             break;
     }
