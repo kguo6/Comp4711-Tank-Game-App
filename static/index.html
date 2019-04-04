@@ -1,41 +1,41 @@
 <html>
 
 <head>
-  <title>Call of Tanks</title>
-  <style>
-    canvas {
-      width: 800px;
-      height: 600px;
-      border: 5px solid black;
-    }
-  </style>
-  <script src="/socket.io/socket.io.js"></script>
+    <title>Call of Tanks</title>
+    <style>
+        canvas {
+            width: 800px;
+            height: 600px;
+            border: 5px solid black;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
 
-  <!-- Used for FB Sharing -->
-  <meta property="og:url" content="http://kennyguo.com/static" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Call of Tanks" />
-  <meta property="og:description" content="Explode your friends" />
-  <meta property="og:image" content="http://kennyguo.com/static/images/tank_transparent.png" />
+    <!-- Used for FB Sharing -->
+    <meta property="og:url" content="http://kennyguo.com/static" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Call of Tanks" />
+    <meta property="og:description" content="Explode your friends" />
+    <meta property="og:image" content="http://kennyguo.com/static/images/tank_transparent.png" />
 </head>
 
 <body>
-  <canvas id="canvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-  <!-- temp until endgame modal is created -->
-  <div>
-    <input id="slack_button" type="image" alt="Add to Slack" style="height: 30px; width: 100px;"
-      src="https://platform.slack-edge.com/img/add_to_slack.png">
-  </div>
+    <!-- temp until endgame modal is created -->
+    <div>
+        <input id="slack_button" type="image" alt="Add to Slack" style="height: 30px; width: 100px;"
+            src="https://platform.slack-edge.com/img/add_to_slack.png">
+    </div>
 
-  <div class="fb-share-button" data-href="http://kennyguo.com/static" data-layout="button" data-size="large"><a
-      target="_blank"
-      href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse"
-      class="fb-xfbml-parse-ignore">Share</a></div>
+    <div class="fb-share-button" data-href="http://kennyguo.com/static" data-layout="button" data-size="large"><a
+            target="_blank"
+            href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse"
+            class="fb-xfbml-parse-ignore">Share</a></div>
 </body>
 <div id="fb-root"></div>
 <script async defer crossorigin="anonymous"
-  src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=2830012797023872&autoLogAppEvents=1"></script>
+    src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=2830012797023872&autoLogAppEvents=1"></script>
 <script src="/static/game.js"></script>
 
 </html>
