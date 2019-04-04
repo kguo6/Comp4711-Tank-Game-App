@@ -19,16 +19,16 @@ let movement = {
 
 document.addEventListener('keydown', function (event) {
     switch (event.keyCode) {
-        case 65: // A
+        case 37: // A
             movement.left = true;
             break;
-        case 87: // W
+        case 38: // W
             movement.up = true;
             break;
-        case 68: // D
+        case 39: // D
             movement.right = true;
             break;
-        case 83: // S
+        case 40: // S
             movement.down = true;
             break;
         case 32:
@@ -39,23 +39,23 @@ document.addEventListener('keydown', function (event) {
 
 document.addEventListener('keyup', function (event) {
     switch (event.keyCode) {
-        case 65: // A
+        case 37: // A
             movement.left = false;
             break;
-        case 87: // W
+        case 38: // W
             movement.up = false;
             break;
-        case 68: // D
+        case 39: // D
             movement.right = false;
             break;
-        case 83: // S
+        case 40: // S
             movement.down = false;
             break;
     }
 });
 
 // Add to Slack button
-document.getElementById("slack_button").addEventListener("click", () => {
+document.getElementById("slack-button").addEventListener("click", () => {
 
     if (currentPlayer) {
         let username = currentPlayer.name;
@@ -106,13 +106,14 @@ function drawTankStats(player) {
     context.fillText(player.name, player.x + 15, player.y - 12);
 }
 
+// Set canvas dimensions
 var canvas = document.getElementById('canvas');
-canvas.width = 800;
+canvas.width = 1000;
 canvas.height = 600;
 var context = canvas.getContext('2d');
 
 socket.on('state', function (state) {
-    context.clearRect(0, 0, 800, 600);
+    context.clearRect(0, 0, 1000, 600);
     for (var id in state.players) {
         var player = state.players[id];
         context.beginPath();
