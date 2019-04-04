@@ -1,4 +1,5 @@
 html, body {
+    background-color: lightgrey; 
     width:  100%;
     height: 100%;
     margin: 0;
@@ -9,7 +10,12 @@ html, body {
     font-family: 'Roboto', sans-serif;
 }
 
+.title {
+    margin-top: 0;
+}
+
 #canvas {
+    background-color: #fefefe;
     display: inline-block;
     width: 1000px;
     height: 600px;
@@ -18,9 +24,19 @@ html, body {
 }
 
 #chat {
-    background-color: red;
-    /* float: right; */
-    display: inline-block;
+    /* background-color: #fefefe; */
+    /* border: 5px solid black; */
+    float: right;
+    padding: 0 2px;
+    height: 600px;
+    width: 20%;
+}
+
+#chat-span {
+    display: block;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #footer {
@@ -32,9 +48,23 @@ html, body {
 }
 
 #leaderboard {
-    background-color: blue;
-    /* float: left; */
-    display: inline-block;
+    /* background-color: blue; */
+    float: left;
+    /* border: 5px solid black; */
+    padding: 0 2px;
+    height: 600px;
+    width: 20%;
+}
+
+#leaderboard-title {
+    margin-top: 0;
+}
+
+#logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
 }
 
 #main-content {
@@ -55,6 +85,21 @@ html, body {
     text-decoration: none;
     display: inline-block;
     font-size: 13px;
+}
+
+#scoreboard {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#scoreboard th, td {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;    
+}
+
+#scoreboard tr:nth-child(even) {
+    background-color: #fefefe;
 }
 
 #slack-button {
@@ -82,7 +127,7 @@ html, body {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
 }
   
 /* Modal Content/Box */
@@ -95,21 +140,6 @@ html, body {
     animation-name: animatetop;
     animation-duration: 0.4s;
     width: 40%; /* Could be more or less, depending on screen size */
-}
-  
-/* The Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-  
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
 }
 
 /* Add Animation */
