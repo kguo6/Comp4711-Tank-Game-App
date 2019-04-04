@@ -57,14 +57,20 @@ document.addEventListener('keyup', function (event) {
 // Add to Slack button
 document.getElementById("slack_button").addEventListener("click", () => {
 
-    // TODO: retrieve session username and score
-    let username = "test";
-    let score = 12;
+    if (currentPlayer) {
+        let username = currentPlayer.name;
+        let score = currentPlayer.kills;
 
-    let xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "/social_media/postslack", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send(`username=${username}&score=${score}`);
+        if (username != null
+            && username != undefined
+            && score != null
+            && score != undefined) {
+                let xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/social_media/postslack", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send(`username=${username}&score=${score}`);
+        }
+    }
 });
 
 socket.emit('new player');
@@ -105,8 +111,6 @@ canvas.width = 800;
 canvas.height = 600;
 var context = canvas.getContext('2d');
 
-
-
 socket.on('state', function(state) {
   context.clearRect(0, 0, 800, 600);
   for (var id in state.players) {
@@ -146,4 +150,3 @@ function getMousePos(canvas, evt) {
       y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
   };
 }
-
