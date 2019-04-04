@@ -16,6 +16,30 @@
 </head>
 
 <body>
+    <!-- modal content -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-content">GAME OVER</h2>
+            <p class="text-content">Better luck next time "username"! Your score was 420!</p>
+
+            <div id="socials">
+                <div>
+                    <button id="play-again" class="text-content">Play again</button>
+                </div>
+                <input id="slack-button" type="image" alt="Add to Slack"
+                    src="https://platform.slack-edge.com/img/add_to_slack.png">
+
+                <div class="fb-share-button" data-href="http://kennyguo.com/static" data-layout="button"
+                    data-size="large">
+                    <a target="_blank"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse"
+                        class="fb-xfbml-parse-ignore">Share</a></div>
+            </div>
+        </div>
+    </div>
+    <!-- end modal content -->
+
     <div id="header">header</div>
 
     <div id="main-content">
@@ -25,20 +49,8 @@
     </div>
 
     <div id="footer">
-
-        <h3 id="instructions">INSTRUCTIONS:</h3>
-        <h3 id="instructions">arrow keys - movement &nbsp;&nbsp;&nbsp; spacebar - shoot</h3>
-        
-        <!-- temp until endgame modal is created -->
-        <div>
-            <input id="slack-button" type="image" alt="Add to Slack"
-                src="https://platform.slack-edge.com/img/add_to_slack.png">
-        </div>
-
-        <div class="fb-share-button" data-href="http://kennyguo.com/static" data-layout="button" data-size="large"><a
-                target="_blank"
-                href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse"
-                class="fb-xfbml-parse-ignore">Share</a></div>
+        <h3 class="text-content">INSTRUCTIONS:</h3>
+        <h3 class="text-content">arrow keys - movement &nbsp;&nbsp;&nbsp; spacebar - shoot</h3>
     </div>
 </body>
 
