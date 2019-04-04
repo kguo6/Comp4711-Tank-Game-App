@@ -2,13 +2,7 @@
 
 <head>
     <title>Call of Tanks</title>
-    <style>
-        canvas {
-            width: 800px;
-            height: 600px;
-            border: 5px solid black;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="./styles/game.css">
     <script src="/socket.io/socket.io.js"></script>
 
     <!-- Used for FB Sharing -->
@@ -20,11 +14,15 @@
 </head>
 
 <body>
-    <canvas id="canvas"></canvas>
+    <div id="main-content">
+        <div id="leaderboard">leaderboard</div>
+        <canvas id="canvas"></canvas>
+        <div id="chat">chat</div>
+    </div>
 
     <!-- temp until endgame modal is created -->
     <div>
-        <input id="slack_button" type="image" alt="Add to Slack" style="height: 30px; width: 100px;"
+        <input id="slack-button" type="image" alt="Add to Slack"
             src="https://platform.slack-edge.com/img/add_to_slack.png">
     </div>
 

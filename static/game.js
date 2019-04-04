@@ -55,7 +55,7 @@ document.addEventListener('keyup', function (event) {
 });
 
 // Add to Slack button
-document.getElementById("slack_button").addEventListener("click", () => {
+document.getElementById("slack-button").addEventListener("click", () => {
 
     if (currentPlayer) {
         let username = currentPlayer.name;
@@ -106,13 +106,14 @@ function drawTankStats(player) {
     context.fillText(player.name, player.x + 15, player.y - 12);
 }
 
+// Set canvas dimensions
 var canvas = document.getElementById('canvas');
-canvas.width = 800;
+canvas.width = 1000;
 canvas.height = 600;
 var context = canvas.getContext('2d');
 
 socket.on('state', function (state) {
-    context.clearRect(0, 0, 800, 600);
+    context.clearRect(0, 0, 1000, 600);
     for (var id in state.players) {
         var player = state.players[id];
         context.beginPath();
