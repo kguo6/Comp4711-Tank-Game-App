@@ -141,21 +141,6 @@ socket.on('state', function (state) {
         drawTankStats(player);
     }
 
-
-socket.on('state', function(state) {
-  context.clearRect(0, 0, 800, 600);
-
-  /* Update the states of Players and tanks */
-  for (var id in state.players) {
-    let player = state.players[id];
-    context.beginPath();
-    context.save();
-    drawTank(player);
-    context.restore();
-    context.save();
-    drawTankStats(player);
-  }
-
   /* Updates state of Shots */
   for(var id in state.projectiles){
     var projectile = state.projectiles[id];
@@ -206,4 +191,4 @@ function checkCollision(playerX, playerY, playerHitBox,
 /* Returns the Euclidean distance given 2 sets of X/Y coordinates */
 function getEuclideanDist(x1, y1, x2, y2,) {
   return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
-};
+}

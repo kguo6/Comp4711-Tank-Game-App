@@ -291,7 +291,7 @@ io.on('connection', function(socket) {
     // console.log(data.targetId);
     // console.log(players[data.targetId].hp);
     if(players[data.targetId].hp <= 0) {
-      
+      // socket.emit('player state', players[data.targetId]);
     }
   });
 });
