@@ -7,12 +7,13 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 var mongo = require('mongodb').MongoClient;
+var Player = require('./static/Player');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // App constants 
-app.set('PORT', 80);
+app.set('PORT', 8888);
 app.set('DB', 'test');
 app.set('DB_ADMIN', 'tank_admin');
 app.set('DB_ADMIN_PASSWORD', 'yEUgZtyWAy4QC9Tc');
@@ -65,21 +66,26 @@ server.listen(app.get('PORT'), function () {
 //   }, 1000);
 
 var players = {};
-var shots = {};
+var projectiles = {};
+
 io.on('connection', function(socket) {
   socket.on('new player', function() {
-    players[socket.id] = {
-      name: socket.id, // Connect with userName
-      hp: 1, 
-      x: 300,
-      y: 300,
-      rotate: 0,
-      speed: 3,
-      shot_speed: 9,
-      width: 40,
-      height: 35,
-      range: 500
-    };
+  
+    // players[socket.id] = {
+    //   id: socket.id,
+    //   name: socket.id, // Connect with userName later
+    //   hp: 1, 
+    //   hitBoxSize: 20,
+    //   x: 300,
+    //   y: 300,
+    //   rotate: 0,
+    //   speed: 3,
+    //   shot_speed: 9,
+    //   width: 40,
+    //   height: 35,
+    //   range: 500
+    // };
+    players[socket.id] = Player.createNewPlayer(socket.id, socket.id);
   });
 
   socket.on('disconnect', function() {
@@ -112,9 +118,10 @@ io.on('connection', function(socket) {
   socket.on('shoot', function(){
     var player = players[socket.id] || {};
     var d = new Date();
-    if(!shots[socket.id]){
-      shots[socket.id] = {
+    if(!projectiles[socket.id]){
+      projectiles[socket.id] = {
         player: socket.id,
+        hitbox: 10,
         x: player.x + player.width/2,
         y: player.y + player.height/2 - 2.5,
         xvel: player.shot_speed * Math.cos(player.rotate),
@@ -130,22 +137,34 @@ io.on('connection', function(socket) {
     socket.emit('player state', player);
   });
 
-  socket.on('move shot', function(){
-    for(let id in shots){
-      let shot = shots[id]
-      // console.log(Math.sqrt(shot.xvel * shot.xvel + shot.yvel * shot.yvel))
-      if(shot.distance < shot.max_distance){
-        shot.x += shot.xvel;
-        shot.y += shot.yvel;
-        shot.distance += Math.sqrt(shot.xvel * shot.xvel + shot.yvel * shot.yvel);
-      } else{
-        delete shots[shot.player];
+  socket.on('move projectile', function(){
+    for(let id in projectiles){
+      let projectile = projectiles[id];
+      // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
+      if(projectile.distance < projectile.max_distance){
+        projectile.x += projectile.xvel;
+        projectile.y += projectile.yvel;
+        projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
+      } else {
+        delete projectiles[projectile.player];
       }
     }
   })
+  
+  socket.on('tankHit', function(data){
+    delete projectiles[data.projectileId];
+    // console.log(data.projectileId);
+    // console.log("Shot deleted");
+
+    players[data.targetId].hp = players[data.targetId].hp - 0.5;
+    // console.log(data.targetId);
+    // console.log(players[data.targetId].hp);
+    if(players[data.targetId].hp <= 0) {
+      
+    }
+  });
 });
 
-
 setInterval(function() {
-  io.sockets.emit('state', { players, shots });
+  io.sockets.emit('state', { players, projectiles });
 }, 1000 / 60);

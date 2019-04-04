@@ -1,6 +1,6 @@
 var socket = io();
-
 let currentPlayer ={};
+
 
 socket.on('message', function(data) {
   console.log(data);
@@ -109,8 +109,10 @@ var context = canvas.getContext('2d');
 
 socket.on('state', function(state) {
   context.clearRect(0, 0, 800, 600);
+
+  /* Update the states of Players and tanks */
   for (var id in state.players) {
-    var player = state.players[id];
+    let player = state.players[id];
     context.beginPath();
     context.save();
     drawTank(player);
@@ -119,16 +121,29 @@ socket.on('state', function(state) {
     drawTankStats(player);
   }
 
-  for(var id in state.shots){
-    var shot = state.shots[id];
+  /* Updates state of Shots */
+  for(var id in state.projectiles){
+    var projectile = state.projectiles[id];
     context.beginPath();
-    context.fillRect(shot.x, shot.y, 5, 5);
+    context.fillRect(projectile.x, projectile.y, 5, 5);
+
+    for (var id in state.players) {
+      let player = state.players[id];
+      if(projectile.player != player.id
+         && checkCollision(player.x, player.y, player.hitbox,
+                           projectile.x, projectile.y, projectile.hitbox)) {
+          //  console.log("THIS IS A HIT!");
+           let targetId = player.id;
+           let projectileId = projectile.player;
+           socket.emit('tankHit', {targetId, projectileId});
+         } else {
+            socket.emit('move projectile');
+         }
+    }
   }
-  socket.emit('move shot');
 });
 
-
-socket.on('player state', function(player){
+socket.on('player state', function(player) {
   currentPlayer = player;
   console.log("player state");
 });
@@ -138,7 +153,6 @@ function die(){
   console.log(currentPlayer);
 }
 
-
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
   return {
@@ -147,3 +161,14 @@ function getMousePos(canvas, evt) {
   };
 }
 
+/* Checks if a target's position is colliding this this Player */
+function checkCollision(playerX, playerY, playerHitBox,
+                        shotX, shotY, shotHitBox) {
+  let minDist = playerHitBox + shotHitBox;
+  return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
+};
+
+/* Returns the Euclidean distance given 2 sets of X/Y coordinates */
+function getEuclideanDist(x1, y1, x2, y2,) {
+  return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
+};
