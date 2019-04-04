@@ -1,5 +1,6 @@
 var express = require('express');
 var http = require('http');
+var favicon = require('serve-favicon')
 var path = require('path');
 var bodyParser = require('body-parser');
 var socketIO = require('socket.io');
@@ -20,6 +21,7 @@ app.set('DB', 'test');
 app.set('DB_ADMIN', 'tank_admin');
 app.set('DB_ADMIN_PASSWORD', 'yEUgZtyWAy4QC9Tc');
 
+app.use(favicon(path.join(__dirname, 'static/images', 'favicon.ico')))
 app.use('/static', express.static(__dirname + '/static'));
 
 // Routing
