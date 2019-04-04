@@ -148,7 +148,6 @@ io.on('connection', function (socket) {
     })
 });
 
-
 setInterval(function () {
     io.sockets.emit('state', { players, shots });
 }, 1000 / 60);
