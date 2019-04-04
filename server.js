@@ -12,10 +12,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Set development port
-// const port = process.argv[2] == "-development" ? 8888 : 80;
+const port = process.argv[2] == "-development" ? 8888 : 80;
 
 // App constants
-app.set('PORT', 80);
+app.set('PORT', port);
 app.set('DB', 'test');
 app.set('DB_ADMIN', 'tank_admin');
 app.set('DB_ADMIN_PASSWORD', 'yEUgZtyWAy4QC9Tc');
