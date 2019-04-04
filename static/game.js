@@ -54,6 +54,19 @@ document.addEventListener('keyup', function (event) {
     }
 });
 
+// Play again button
+document.getElementById("play-again").addEventListener("click", () => {
+
+    if (currentPlayer) {
+        console.log(currentPlayer);
+
+        // TODO: wrap-up game logic
+        setTimeout(() => { // TEMP
+            location.reload();
+        }, 1500);
+    }
+});
+
 // Add to Slack button
 document.getElementById("slack-button").addEventListener("click", () => {
 
@@ -112,6 +125,10 @@ canvas.width = 1000;
 canvas.height = 600;
 var context = canvas.getContext('2d');
 
+// Set modal areas
+var modal = document.getElementById('myModal');
+var span = document.getElementsByClassName("close")[0];
+
 socket.on('state', function (state) {
     context.clearRect(0, 0, 1000, 600);
     for (var id in state.players) {
@@ -132,7 +149,6 @@ socket.on('state', function (state) {
     socket.emit('move shot');
 });
 
-
 socket.on('player state', function (player) {
     currentPlayer = player;
     console.log("player state");
@@ -140,9 +156,8 @@ socket.on('player state', function (player) {
 
 function die() {
     socket.emit('died');
-    console.log(currentPlayer);
+    modal.style.display = "block";
 }
-
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
@@ -150,4 +165,16 @@ function getMousePos(canvas, evt) {
         x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
         y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function () {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
 }
