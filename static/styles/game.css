@@ -18,6 +18,19 @@ html, body {
     display: inline-block;
 }
 
+#footer {
+    width: 100%;
+}
+
+#header {
+    width: 100%;
+}
+
+#instructions {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
+
 #leaderboard {
     background-color: blue;
     /* float: left; */
