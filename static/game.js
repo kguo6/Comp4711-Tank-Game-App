@@ -119,6 +119,8 @@ var context = canvas.getContext('2d');
 // Set modal areas
 var modal = document.getElementById('myModal');
 var span = document.getElementsByClassName("close")[0];
+let image = new Image();
+image.src = './images/tank.png';
 
 socket.on('state', function (state) {
     context.clearRect(0, 0, 1000, 600);
@@ -179,14 +181,10 @@ socket.on('show dead modal', function (finishedPlayer) {
 function drawTank(player) {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-
-    context.fillStyle = 'green';
     context.translate(player.x + player.width / 2, player.y + player.height / 2);
     context.rotate(player.rotate);
     context.translate(-(player.x + player.width / 2), -(player.y + player.height / 2));
-    context.fillRect(player.x, player.y, player.width, player.height);
-    context.fillStyle = 'black';
-    context.fillRect(player.x + player.width / 2 + 5, player.y + player.height / 2 - 2.5, 30, 5);
+    context.drawImage(image, player.x, player.y, player.width, player.height);
 }
 
 /**
