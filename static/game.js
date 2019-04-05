@@ -139,8 +139,8 @@ socket.on('state', function (state) {
            let targetId = player.id;
            let projectileId = projectile.player;
 
-           // THIS EMIT SEEMS TO FIRE TWICE, YET THE LOGIC 
-           // IN THIS IF BLOCK ONLY RUNS ONCE? 
+           // This emit seems to fire twice, yet the logic 
+           // within this If block only runs once..?
            socket.emit('tank hit', {targetId, projectileId});
          } else {
             socket.emit('move projectile');
