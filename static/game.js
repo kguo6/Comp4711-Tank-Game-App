@@ -181,6 +181,7 @@ socket.on('player state', function (player) {
 
 function die() {
     socket.emit('died');
+    document.getElementById('modal-msg').innerHTML = `Better luck next time ${currentPlayer.name}! Your score was ${currentPlayer.score}!`;
     modal.style.display = "block";
 }
 
