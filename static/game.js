@@ -153,15 +153,10 @@ socket.on('show dead modal', function() {
     modal.style.display = "block";
 });
 
-socket.on('player state', function(player) {
-  currentPlayer = player;
-  modal.style.display = "block";
-  console.log(socket.id);
-});
-
 
 /*              Helper Functions                */
 /*                                              */
+
 /**
  * Displays the body of the tank on the canvas.
  * @param {*} player Socket Id of the client
@@ -184,7 +179,7 @@ function drawTank(player) {
  * @param {*} player Socket Id of the client
  */
 function drawTankStats(player) {
-    // Draw Hp
+    // Draw Hp bar
     let currentHp = player.hp / 3;
     context.fillStyle = 'red';
     context.fillRect(player.x, player.y + player.height + 12, player.width, 5);

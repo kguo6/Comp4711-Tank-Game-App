@@ -250,11 +250,6 @@ io.on('connection', function(socket) {
     }
   });
 
-  socket.on('died', function(){
-    let player = players[socket.id];
-    socket.emit('player state', player);
-  });
-
   socket.on('move projectile', function(){
     for(let id in projectiles){
       let projectile = projectiles[id];
