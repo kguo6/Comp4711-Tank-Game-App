@@ -12,7 +12,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Call of Tanks" />
     <meta property="og:description" content="Explode your friends!" />
-    <meta property="og:image" content="http://kennyguo.com/static/images/call_of_tanks_logo.png" />
+    <meta property="og:image" content="http://kennyguo.com/static/assets/images/call_of_tanks_logo.png" />
 </head>
 
 <body>
@@ -39,11 +39,16 @@
     </div>
     <!-- end modal content -->
 
-    <div id="header"></div>
+    <div id="header">
+        <audio id="background_audio" controls>
+            <source src="/static/assets/audio/battle_music.ogg" type="audio/ogg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
 
     <div id="main-content">
         <div id="leaderboard">
-            <img id="logo" src="/static/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare">
+            <img id="logo" src="/static/assets/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare">
             <h4 class="text-content title">LEADERBOARD</h4 id="leaderboard-title">
             <!-- TEMP -->
             <table id="scoreboard">

@@ -14,6 +14,10 @@ html, body {
     margin-top: 0;
 }
 
+#background_audio {
+    display: none;
+}
+
 #canvas {
     background-color: #fefefe;
     display: inline-block;

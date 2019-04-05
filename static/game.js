@@ -17,6 +17,12 @@ let movement = {
     right: false
 }
 
+let playAudio = (() => {
+    var audio = document.getElementById("background_audio");
+    audio.loop = true;
+    audio.play();
+})();
+
 // Hide leaderboard and chat divs according to window size
 window.onload = checkBrowserSize;
 window.onresize = checkBrowserSize;
