@@ -1,8 +1,8 @@
 /* Player Tank Constants */
 const MAX_HP = 3;
-const TANK_HIT_BOX_SIZE = 20;
+const TANK_HIT_BOX_SIZE = 25;
 const TANK_HEIGHT = 35;
-const TANK_WIDTH = 40;
+const TANK_WIDTH = 50;
 const TANK_ROTATE = 0;
 const TANK_SPEED = 3;
 const TANK_SHOT_SPEED = 9;
