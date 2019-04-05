@@ -1,6 +1,6 @@
 var socket = io();
-let currentPlayer ={};
 
+let currentPlayer ={};
 
 socket.on('message', function(data) {
   console.log(data);
@@ -15,6 +15,26 @@ let movement = {
     down: false,
     left: false,
     right: false
+}
+
+// Hide leaderboard and chat divs according to window size
+window.onload = checkBrowserSize;
+window.onresize = checkBrowserSize;
+
+function checkBrowserSize() {
+    if (getWidth() > 1400) {
+        document.getElementById('leaderboard').style = "display: block;";
+    }
+    if (getWidth() > 1700) {
+        document.getElementById('chat').style = "display: block;";
+    }
+
+    if (getWidth() < 1400) {
+        document.getElementById('leaderboard').style = "display: none;";
+    }
+    if (getWidth() < 1700) {
+        document.getElementById('chat').style = "display: none;";
+    }
 }
 
 document.addEventListener('keydown', function (event) {
@@ -92,6 +112,7 @@ document.getElementById("slack-button").addEventListener("click", () => {
 });
 
 socket.emit('new player');
+
 setInterval(function () {
     socket.emit('movement', movement);
 }, 1000 / 60);
@@ -150,9 +171,9 @@ socket.on('state', function (state) {
 });
 
 socket.on('show dead modal', function() {
+    document.getElementById('modal-msg').innerHTML = `Better luck next time ${currentPlayer.name}! Your score was ${currentPlayer.score}!`;
     modal.style.display = "block";
 });
-
 
 /*              Helper Functions                */
 /*                                              */
@@ -225,4 +246,15 @@ function getMousePos(canvas, evt) {
         x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
         y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
+}
+
+// Returns width of browser
+function getWidth() {
+    return Math.max(
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        document.body.offsetWidth,
+        document.documentElement.offsetWidth,
+        document.documentElement.clientWidth
+    );
 }
