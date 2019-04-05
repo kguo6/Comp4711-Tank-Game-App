@@ -17,6 +17,26 @@ let movement = {
     right: false
 }
 
+// Hide leaderboard and chat divs according to window size
+window.onload = checkBrowserSize;
+window.onresize = checkBrowserSize;
+
+function checkBrowserSize() {
+    if (getWidth() > 1400) {
+        document.getElementById('leaderboard').style = "display: block;";
+    }
+    if (getWidth() > 1700) {
+        document.getElementById('chat').style = "display: block;";
+    }
+
+    if (getWidth() < 1400) {
+        document.getElementById('leaderboard').style = "display: none;";
+    }
+    if (getWidth() < 1700) {
+        document.getElementById('chat').style = "display: none;";
+    }
+}
+
 document.addEventListener('keydown', function (event) {
     switch (event.keyCode) {
         case 37: // left arrow
@@ -170,4 +190,15 @@ function getMousePos(canvas, evt) {
         x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
         y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
+}
+
+// Returns width of browser
+function getWidth() {
+    return Math.max(
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        document.body.offsetWidth,
+        document.documentElement.offsetWidth,
+        document.documentElement.clientWidth
+    );
 }
