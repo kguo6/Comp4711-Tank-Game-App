@@ -17,11 +17,14 @@ let movement = {
     right: false
 }
 
+// Loop background music
 let playAudio = (() => {
-    var audio = document.getElementById("background_audio");
+    let audio = document.getElementById("background_audio");
     audio.loop = true;
     audio.play();
 })();
+
+let explosion = document.getElementById("explosion");
 
 // Hide leaderboard and chat divs according to window size
 window.onload = checkBrowserSize;
@@ -140,6 +143,7 @@ socket.on('state', function (state) {
         drawTankStats(player);
         // Checks if the player is dead
         if (player.hp <= 0) {
+            explosion.play();
             socket.emit('player died', player.id);
         }
     }

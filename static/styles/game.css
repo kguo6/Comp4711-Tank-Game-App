@@ -5,6 +5,10 @@ html, body {
     margin: 0;
 }
 
+.audio_clip {
+    display: none;
+}
+
 .text-content {
     text-align: center;
     font-family: 'Roboto', sans-serif;
@@ -12,10 +16,6 @@ html, body {
 
 .title {
     margin-top: 0;
-}
-
-#background_audio {
-    display: none;
 }
 
 #canvas {
