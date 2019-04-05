@@ -25,14 +25,14 @@ function checkBrowserSize() {
     if (getWidth() > 1400) {
         document.getElementById('leaderboard').style = "display: block;";
     }
-    if (getWidth() > 1700) {
+    if (getWidth() > 1900) {
         document.getElementById('chat').style = "display: block;";
     }
 
     if (getWidth() < 1400) {
         document.getElementById('leaderboard').style = "display: none;";
     }
-    if (getWidth() < 1700) {
+    if (getWidth() < 1900) {
         document.getElementById('chat').style = "display: none;";
     }
 }
