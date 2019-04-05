@@ -30,7 +30,7 @@ app.set('DB', 'test');
 app.set('DB_ADMIN', 'tank_admin');
 app.set('DB_ADMIN_PASSWORD', 'yEUgZtyWAy4QC9Tc');
 
-app.use(favicon(path.join(__dirname, 'static/images', 'favicon.ico')))
+app.use(favicon(path.join(__dirname, 'static/assets/images', 'favicon.ico')))
 app.use('/static', express.static(__dirname + '/static'));
 
 // Register API routes
@@ -235,7 +235,6 @@ io.on('connection', function (socket) {
 
     socket.on('shoot', function () {
         var player = players[socket.id] || {};
-        var d = new Date();
         if (!projectiles[socket.id]) {
             projectiles[socket.id] = {
                 player: socket.id,
@@ -271,7 +270,9 @@ io.on('connection', function (socket) {
 
         // If target exists, they take damage
         if (players[data.targetId]) {
-            players[data.targetId].hp -= 0.5;
+            if(players[data.targetId].hp >= 0){
+                players[data.targetId].hp -= 0.5;
+            }
 
             // If target died from damage, increment shooter's kill counter
             if (players[data.targetId].hp == 0) {

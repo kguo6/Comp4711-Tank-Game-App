@@ -17,6 +17,28 @@ let movement = {
     right: false
 }
 
+// Get sound effects
+let backgroundAudio = document.getElementById("background_audio");
+let explosion = document.getElementById("explosion");
+backgroundAudio.volume = 0.4;
+explosion.volume = 0.4;
+
+let muteButton = document.getElementById("mute-audio");
+let playButton = document.getElementById("play-audio");
+
+// Loop background music
+let playAudio = (() => {
+    if (sessionStorage.getItem("muted") == 0 || sessionStorage.getItem("muted") === null) {
+        playButton.style.display = "none";
+        muteButton.style.display = "inline";
+        backgroundAudio.loop = true;
+        backgroundAudio.play();
+    } else {
+        playButton.style.display = "inline";
+        muteButton.style.display = "none";
+    }
+})();
+
 // Hide leaderboard and chat divs according to window size
 window.onload = checkBrowserSize;
 window.onresize = checkBrowserSize;
@@ -85,6 +107,25 @@ document.getElementById("play-again").addEventListener("click", () => {
     location.reload();
 });
 
+// Mute audio button
+muteButton.addEventListener("click", () => {
+    sessionStorage.setItem("muted", 1);
+    muteButton.style.display = "none";
+    playButton.style.display = "inline";
+    backgroundAudio.muted = true;
+    explosion.muted = true;
+});
+
+// Play audio button
+playButton.addEventListener("click", () => {
+    sessionStorage.setItem("muted", 0);
+    playButton.style.display = "none";
+    muteButton.style.display = "inline";
+    backgroundAudio.muted = false;
+    backgroundAudio.play();
+    explosion.muted = false;
+});
+
 // Add to Slack button
 document.getElementById("slack-button").addEventListener("click", () => {
 
@@ -119,6 +160,8 @@ var context = canvas.getContext('2d');
 // Set modal areas
 var modal = document.getElementById('myModal');
 var span = document.getElementsByClassName("close")[0];
+let image = new Image();
+image.src = './images/tank.png';
 
 socket.on('state', function (state) {
     context.clearRect(0, 0, 1000, 600);
@@ -134,6 +177,7 @@ socket.on('state', function (state) {
         drawTankStats(player);
         // Checks if the player is dead
         if (player.hp <= 0) {
+            explosion.play();
             socket.emit('player died', player.id);
         }
     }
@@ -179,14 +223,10 @@ socket.on('show dead modal', function (finishedPlayer) {
 function drawTank(player) {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-
-    context.fillStyle = 'green';
     context.translate(player.x + player.width / 2, player.y + player.height / 2);
     context.rotate(player.rotate);
     context.translate(-(player.x + player.width / 2), -(player.y + player.height / 2));
-    context.fillRect(player.x, player.y, player.width, player.height);
-    context.fillStyle = 'black';
-    context.fillRect(player.x + player.width / 2 + 5, player.y + player.height / 2 - 2.5, 30, 5);
+    context.drawImage(image, player.x, player.y, player.width, player.height);
 }
 
 /**
