@@ -30,7 +30,7 @@ app.set('DB', 'test');
 app.set('DB_ADMIN', 'tank_admin');
 app.set('DB_ADMIN_PASSWORD', 'yEUgZtyWAy4QC9Tc');
 
-app.use(favicon(path.join(__dirname, 'static/images', 'favicon.ico')))
+app.use(favicon(path.join(__dirname, 'static/assets/images', 'favicon.ico')))
 app.use('/static', express.static(__dirname + '/static'));
 
 // Register API routes
