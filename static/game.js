@@ -96,6 +96,76 @@ setInterval(function () {
     socket.emit('movement', movement);
 }, 1000 / 60);
 
+// Set canvas dimensions
+var canvas = document.getElementById('canvas');
+canvas.width = 1000;
+canvas.height = 600;
+var context = canvas.getContext('2d');
+
+// Set modal areas
+var modal = document.getElementById('myModal');
+var span = document.getElementsByClassName("close")[0];
+
+socket.on('state', function (state) {
+    context.clearRect(0, 0, 1000, 600);
+
+    /* Updates state of all players */
+    for (var id in state.players) {
+        var player = state.players[id];
+        context.beginPath();
+        context.save();
+        drawTank(player);
+        context.restore();
+        context.save();
+        drawTankStats(player);
+        // Checks if the player is dead
+        if(player.hp <= 0) {
+            socket.emit('player died', player.id);
+        }
+    }
+
+  /* Updates state of all Projectiles */
+  for(var projId in state.projectiles){
+    var projectile = state.projectiles[projId];
+    context.beginPath();
+    context.fillRect(projectile.x, projectile.y, 5, 5);
+
+    // Iterates through all players to check for collision with this projectile
+    for (var id in state.players) {
+      let player = state.players[id];
+      if(projectile.player != player.id
+         && checkCollision(player.x, player.y, player.hitbox,
+                           projectile.x, projectile.y, projectile.hitbox)) {
+           let targetId = player.id;
+           let projectileId = projectile.player;
+
+           // THIS EMIT SEEMS TO FIRE TWICE, YET THE LOGIC 
+           // IN THIS IF BLOCK ONLY RUNS ONCE? 
+           socket.emit('tank hit', {targetId, projectileId});
+         } else {
+            socket.emit('move projectile');
+         }
+    }
+  }
+});
+
+socket.on('show dead modal', function() {
+    modal.style.display = "block";
+});
+
+socket.on('player state', function(player) {
+  currentPlayer = player;
+  modal.style.display = "block";
+  console.log(socket.id);
+});
+
+
+/*              Helper Functions                */
+/*                                              */
+/**
+ * Displays the body of the tank on the canvas.
+ * @param {*} player Socket Id of the client
+ */
 function drawTank(player) {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -109,6 +179,10 @@ function drawTank(player) {
     context.fillRect(player.x + player.width / 2 + 5, player.y + player.height / 2 - 2.5, 30, 5);
 }
 
+/**
+ * Displays the player's name and lifebar on the canvas.
+ * @param {*} player Socket Id of the client
+ */
 function drawTankStats(player) {
     // Draw Hp
     let currentHp = player.hp / 3;
@@ -124,58 +198,30 @@ function drawTankStats(player) {
     context.fillText(player.name, player.x + 15, player.y - 12);
 }
 
-// Set canvas dimensions
-var canvas = document.getElementById('canvas');
-canvas.width = 1000;
-canvas.height = 600;
-var context = canvas.getContext('2d');
+/**
+ * Checks if a projectile's hitbox collides with a player tank's hitbox.
+ * @param {*} playerX x coordinate of the player tank
+ * @param {*} playerY y coordinate of the player tank
+ * @param {*} playerHitBox hitbox(radius) of the player tank
+ * @param {*} shotX x coordinate of the projectile
+ * @param {*} shotY y coordinate of the projectile
+ * @param {*} shotHitBox hitbox(radius) of the projectile
+ */
+function checkCollision(playerX, playerY, playerHitBox,
+                        shotX, shotY, shotHitBox) {
+  let minDist = playerHitBox + shotHitBox;
+  return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
+};
 
-// Set modal areas
-var modal = document.getElementById('myModal');
-var span = document.getElementsByClassName("close")[0];
-
-socket.on('state', function (state) {
-    context.clearRect(0, 0, 1000, 600);
-    for (var id in state.players) {
-        var player = state.players[id];
-        context.beginPath();
-        context.save();
-        drawTank(player);
-        context.restore();
-        context.save();
-        drawTankStats(player);
-    }
-
-  /* Updates state of Shots */
-  for(var id in state.projectiles){
-    var projectile = state.projectiles[id];
-    context.beginPath();
-    context.fillRect(projectile.x, projectile.y, 5, 5);
-
-    for (var id in state.players) {
-      let player = state.players[id];
-      if(projectile.player != player.id
-         && checkCollision(player.x, player.y, player.hitbox,
-                           projectile.x, projectile.y, projectile.hitbox)) {
-          //  console.log("THIS IS A HIT!");
-           let targetId = player.id;
-           let projectileId = projectile.player;
-           socket.emit('tankHit', {targetId, projectileId});
-         } else {
-            socket.emit('move projectile');
-         }
-    }
-  }
-});
-
-socket.on('player state', function(player) {
-  currentPlayer = player;
-  console.log("player state");
-});
-
-function die() {
-    socket.emit('died');
-    modal.style.display = "block";
+/**
+ * Returns the Euclidean distance between 2 x and y coordinates.
+ * @param {*} x1 x coordinate of the 1st point
+ * @param {*} y1 y coordinate of the 1st point
+ * @param {*} x2 x coordinate of the 2nd point
+ * @param {*} y2 y coordinate of the 2nd point
+ */
+function getEuclideanDist(x1, y1, x2, y2,) {
+  return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
 }
 
 function getMousePos(canvas, evt) {
@@ -184,16 +230,4 @@ function getMousePos(canvas, evt) {
         x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
         y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
-}
-
-/* Checks if a target's position is colliding this this Player */
-function checkCollision(playerX, playerY, playerHitBox,
-                        shotX, shotY, shotHitBox) {
-  let minDist = playerHitBox + shotHitBox;
-  return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
-};
-
-/* Returns the Euclidean distance given 2 sets of X/Y coordinates */
-function getEuclideanDist(x1, y1, x2, y2,) {
-  return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
 }

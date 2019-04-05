@@ -22,9 +22,10 @@ function Player(id, name) {
     this.width = TANK_WIDTH;
     this.shot_speed = TANK_SHOT_SPEED;
     this.range = TANK_SHOT_RANGE;
+    this.kills = 0;
 }
 
-/* Generates a new Player */
+/* Generates and returns new Player */
 Player.createNewPlayer = function(id, name) {
     return new Player(id, name);
 }

@@ -19,6 +19,7 @@ const User = require("./database/models/User");
 const Achievement = require("./database/models/Achievement");
 const collectionUser = "users";
 const collectionAchievements = "achievements";
+const FPS = 60;
 
 // Set development port
 const port = process.argv[2] == "-development" ? 8888 : 80;
@@ -202,21 +203,6 @@ var projectiles = {};
 
 io.on('connection', function(socket) {
   socket.on('new player', function() {
-  
-    // players[socket.id] = {
-    //   id: socket.id,
-    //   name: socket.id, // Connect with userName later
-    //   hp: 1, 
-    //   hitBoxSize: 20,
-    //   x: 300,
-    //   y: 300,
-    //   rotate: 0,
-    //   speed: 3,
-    //   shot_speed: 9,
-    //   width: 40,
-    //   height: 35,
-    //   range: 500
-    // };
     players[socket.id] = Player.createNewPlayer(socket.id, socket.id);
   });
 
@@ -236,9 +222,10 @@ io.on('connection', function(socket) {
       player.rotate += player.speed * Math.PI/180;
     }
 
-    socket.on('disconnect', function () {
-        delete players[socket.id];
-    });
+    if (data.up) {
+      player.x += player.speed * Math.cos(player.rotate);
+      player.y += player.speed * Math.sin(player.rotate);
+    }
 
     if (data.down) {
       player.x -= player.speed * Math.cos(player.rotate);
@@ -281,21 +268,34 @@ io.on('connection', function(socket) {
       }
     }
   })
-  
-  socket.on('tankHit', function(data){
-    delete projectiles[data.projectileId];
-    // console.log(data.projectileId);
-    // console.log("Shot deleted");
 
-    players[data.targetId].hp = players[data.targetId].hp - 0.5;
-    // console.log(data.targetId);
-    // console.log(players[data.targetId].hp);
-    if(players[data.targetId].hp <= 0) {
-      // socket.emit('player state', players[data.targetId]);
+  // @param data.projectileId - Socket Id of the player who shot the projectile
+  // @param data.targetId     - Socket Id of the player hit by the projectile
+  socket.on('tank hit', function(data){
+    delete projectiles[data.projectileId]; // Delete Projectile
+
+    // If target exists, they take damage
+    if(players[data.targetId]){ 
+      players[data.targetId].hp -= 0.5;
+      
+      // If target died from damage, increment shooter's kill counter
+      if(players[data.targetId].hp == 0) {
+        players[data.projectileId].kills += 1;
+      }
+    }
+
+  });
+
+  // Delete player and show dead modal
+  socket.on('player died', function(deadPlayerId){
+    if(socket.id === deadPlayerId) {
+      socket.emit('show dead modal');
+      delete players[deadPlayerId];
     }
   });
 });
 
+/* Game updates the state of all players at a rate of FPS */
 setInterval(function() {
   io.sockets.emit('state', { players, projectiles });
-}, 1000 / 60);
+}, 1000 / FPS);
