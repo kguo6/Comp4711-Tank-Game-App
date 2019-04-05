@@ -48,6 +48,7 @@ html, body {
 }
 
 #header {
+    text-align: right;
     width: 100%;
 }
 
@@ -68,8 +69,20 @@ html, body {
 }
 
 #main-content {
-    margin-top: 20px;
+    margin-top: 8px;
     text-align: center;
+}
+
+#mute-audio {
+    height: 30px;
+    margin: 8px 20px;
+    width: 30px;
+}
+
+#play-audio {
+    height: 30px;
+    margin: 8px 20px;
+    width: 30px;
 }
 
 #play-again {

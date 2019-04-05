@@ -40,11 +40,14 @@
     <!-- end modal content -->
 
     <div id="header">
-        <audio id="background_audio" class="audio_clip" volume="0.3" controls>
+        <input id="mute-audio" type="image" src="/static/assets/images/mute_audio.png" />
+        <input id="play-audio" type="image" src="/static/assets/images/play_audio.png" />
+
+        <audio id="background_audio" class="audio_clip" controls>
             <source src="/static/assets/audio/battle_music.ogg" type="audio/ogg">
             Your browser does not support the audio element.
         </audio>
-        <audio id="explosion" class="audio_clip" volume="0.3" controls>
+        <audio id="explosion" class="audio_clip" controls>
             <source src="/static/assets/audio/tank_explosion.mp3" type="audio/mp3">
             Your browser does not support the audio element.
         </audio>
