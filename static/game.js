@@ -1,9 +1,9 @@
 var socket = io();
 
-let currentPlayer ={};
+let currentPlayer = {};
 
-socket.on('message', function(data) {
-  console.log(data);
+socket.on('message', function (data) {
+    console.log(data);
 });
 
 socket.on('name', function (data) {
@@ -81,15 +81,8 @@ document.addEventListener('keyup', function (event) {
 
 // Play again button
 document.getElementById("play-again").addEventListener("click", () => {
-
-    if (currentPlayer) {
-        console.log(currentPlayer);
-
-        // TODO: wrap-up game logic
-        setTimeout(() => { // TEMP
-            location.reload();
-        }, 1500);
-    }
+    // TODO: wrap-up game logic
+    location.reload();
 });
 
 // Add to Slack button
@@ -140,38 +133,39 @@ socket.on('state', function (state) {
         context.save();
         drawTankStats(player);
         // Checks if the player is dead
-        if(player.hp <= 0) {
+        if (player.hp <= 0) {
             socket.emit('player died', player.id);
         }
     }
 
-  /* Updates state of all Projectiles */
-  for(var projId in state.projectiles){
-    var projectile = state.projectiles[projId];
-    context.beginPath();
-    context.fillRect(projectile.x, projectile.y, 5, 5);
+    /* Updates state of all Projectiles */
+    for (var projId in state.projectiles) {
+        var projectile = state.projectiles[projId];
+        context.beginPath();
+        context.fillRect(projectile.x, projectile.y, 5, 5);
 
-    // Iterates through all players to check for collision with this projectile
-    for (var id in state.players) {
-      let player = state.players[id];
-      if(projectile.player != player.id
-         && checkCollision(player.x, player.y, player.hitbox,
-                           projectile.x, projectile.y, projectile.hitbox)) {
-           let targetId = player.id;
-           let projectileId = projectile.player;
+        // Iterates through all players to check for collision with this projectile
+        for (var id in state.players) {
+            let player = state.players[id];
+            if (projectile.player != player.id
+                && checkCollision(player.x, player.y, player.hitbox,
+                    projectile.x, projectile.y, projectile.hitbox)) {
+                let targetId = player.id;
+                let projectileId = projectile.player;
 
-           // This emit seems to fire twice, yet the logic 
-           // within this If block only runs once..?
-           socket.emit('tank hit', {targetId, projectileId});
-         } else {
-            socket.emit('move projectile');
-         }
+                // This emit seems to fire twice, yet the logic 
+                // within this If block only runs once..?
+                socket.emit('tank hit', { targetId, projectileId });
+            } else {
+                socket.emit('move projectile');
+            }
+        }
     }
-  }
 });
 
-socket.on('show dead modal', function() {
-    document.getElementById('modal-msg').innerHTML = `Better luck next time ${currentPlayer.name}! Your score was ${currentPlayer.score}!`;
+socket.on('show dead modal', function (finishedPlayer) {
+    currentPlayer = finishedPlayer;
+    document.getElementById('modal-msg').innerHTML = `Better luck next time ${currentPlayer.name}! Your score was ${currentPlayer.kills}!`;
     modal.style.display = "block";
 });
 
@@ -224,9 +218,9 @@ function drawTankStats(player) {
  * @param {*} shotHitBox hitbox(radius) of the projectile
  */
 function checkCollision(playerX, playerY, playerHitBox,
-                        shotX, shotY, shotHitBox) {
-  let minDist = playerHitBox + shotHitBox;
-  return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
+    shotX, shotY, shotHitBox) {
+    let minDist = playerHitBox + shotHitBox;
+    return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
 };
 
 /**
@@ -236,8 +230,8 @@ function checkCollision(playerX, playerY, playerHitBox,
  * @param {*} x2 x coordinate of the 2nd point
  * @param {*} y2 y coordinate of the 2nd point
  */
-function getEuclideanDist(x1, y1, x2, y2,) {
-  return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
+function getEuclideanDist(x1, y1, x2, y2, ) {
+    return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
 }
 
 function getMousePos(canvas, evt) {

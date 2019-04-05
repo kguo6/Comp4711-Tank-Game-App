@@ -284,7 +284,8 @@ io.on('connection', function(socket) {
   // Delete player and show dead modal
   socket.on('player died', function(deadPlayerId){
     if(socket.id === deadPlayerId) {
-      socket.emit('show dead modal');
+        let playerCopy = players[deadPlayerId];
+      socket.emit('show dead modal', playerCopy);
       delete players[deadPlayerId];
     }
   });
