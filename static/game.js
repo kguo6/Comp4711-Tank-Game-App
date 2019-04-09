@@ -91,34 +91,45 @@ socket.emit("new player", name);
 
 // Logout button
 logoutBtn.addEventListener("click", () => {
-  sessionStorage.setItem("logged", 0);
-  socket.emit("disconnect", name);
-  location.reload();
+    sessionStorage.setItem("logged", 0);
+    socket.emit('remove player', socket.id);
+    loginModal.style.display = "inline";
+    logoutBtn.style.display = "none";
 });
 
-document.addEventListener("keydown", function(event) {
-  switch (event.keyCode) {
-    case 37: // left arrow
-      movement.left = true;
-      event.preventDefault();
-      break;
-    case 38: // up arrow
-      movement.up = true;
-      event.preventDefault();
-      break;
-    case 39: // right arrow
-      movement.right = true;
-      event.preventDefault();
-      break;
-    case 40: // down arrow
-      movement.down = true;
-      event.preventDefault();
-      break;
-    case 32:
-      socket.emit("shoot");
-      event.preventDefault();
-      break;
-  }
+document.addEventListener('keydown', function (event) {
+    switch (event.keyCode) {
+        case 37: // left arrow
+            movement.left = true;
+            if (event.target == document.body) {
+                event.preventDefault();
+            }
+            break;
+        case 38: // up arrow
+            movement.up = true;
+            if (event.target == document.body) {
+                event.preventDefault();
+            }
+            break;
+        case 39: // right arrow
+            movement.right = true;
+            if (event.target == document.body) {
+                event.preventDefault();
+            }
+            break;
+        case 40: // down arrow
+            movement.down = true;
+            if (event.target == document.body) {
+                event.preventDefault();
+            }
+            break;
+        case 32:
+            socket.emit('shoot');
+            if (event.target == document.body) {
+                event.preventDefault();
+            }
+            break;
+    }
 });
 
 document.addEventListener("keyup", function(event) {

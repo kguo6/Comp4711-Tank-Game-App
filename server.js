@@ -227,6 +227,10 @@ io.on("connection", function(socket) {
     leaderboard.sortPlayers();
     io.sockets.emit("update scoreboard", leaderboard.getPlayers());
   });
+  
+  socket.on('remove player', function (id) {
+      delete players[id];
+  });
 
   socket.on("disconnect", function() {
     if (leaderboard.playerExists(players[socket.id])) {
