@@ -3,9 +3,9 @@ class Leaderboard {
     this.players = [];
   }
 
-  playerExists(player) {
+  playerExists(playerID) {
     for (var i = 0; i < this.players.length; i++) {
-      if (player != undefined && this.players[i].id == player.id) {
+      if (this.players[i].id == playerID) {
         return true;
       }
     }
