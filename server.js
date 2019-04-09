@@ -227,14 +227,21 @@ io.on("connection", function(socket) {
     leaderboard.sortPlayers();
     io.sockets.emit("update scoreboard", leaderboard.getPlayers());
   });
-  
-  socket.on('remove player', function (id) {
-      delete players[id];
+
+  socket.on("remove player", function(id) {
+    if (leaderboard.playerExists(id)) {
+      leaderboard.removePlayer(players[id]);
+      leaderboard.sortPlayers();
+      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+    }
+    delete players[id];
   });
 
   socket.on("disconnect", function() {
-    if (leaderboard.playerExists(players[socket.id])) {
+    if (leaderboard.playerExists(socket.id)) {
       leaderboard.removePlayer(players[socket.id]);
+      leaderboard.sortPlayers();
+      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
     }
     delete players[socket.id];
   });
@@ -320,9 +327,11 @@ io.on("connection", function(socket) {
       socket.emit("show dead modal", playerCopy);
 
       // Remove Player and update leaderboard
-      leaderboard.removePlayer(players[deadPlayerId]);
-      leaderboard.sortPlayers();
-      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      if (leaderboard.playerExists(deadPlayerId)) {
+        leaderboard.removePlayer(players[deadPlayerId]);
+        leaderboard.sortPlayers();
+        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      }
       delete players[deadPlayerId];
     }
   });
