@@ -1,22 +1,23 @@
-var express = require('express');
-var http = require('http');
-var favicon = require('serve-favicon')
-var path = require('path');
-var bodyParser = require('body-parser');
-var socketIO = require('socket.io');
+var express = require("express");
+var http = require("http");
+var favicon = require("serve-favicon");
+var path = require("path");
+var bodyParser = require("body-parser");
+var socketIO = require("socket.io");
 var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
-var mongo = require('mongodb').MongoClient;
-var Player = require('./static/Player');
+var mongo = require("mongodb").MongoClient;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 // Import Module
 const User = require("./database/models/User");
 const Achievement = require("./database/models/Achievement");
+const Player = require("./src/Player");
+const Leaderboard = require("./src/Leaderboard");
+
 const collectionUser = "users";
 const collectionAchievements = "achievements";
 const FPS = 60;
@@ -27,13 +28,16 @@ const CANVAS_WIDTH = 1000 - 15;
 const port = process.argv[2] == "-development" ? 8888 : 80;
 
 // App constants
-app.set('PORT', port);
-app.set('DB', 'test');
-app.set('DB_ADMIN', 'tank_admin');
-app.set('DB_ADMIN_PASSWORD', 'yEUgZtyWAy4QC9Tc');
+app.set("PORT", port);
+app.set("DB", "test");
+app.set("DB_ADMIN", "tank_admin");
+app.set("DB_ADMIN_PASSWORD", "yEUgZtyWAy4QC9Tc");
 
-app.use(favicon(path.join(__dirname, 'static/images', 'favicon.ico')))
-app.use('/static', express.static(__dirname + '/static'));
+app.use(favicon(path.join(__dirname, "static/assets/images", "favicon.ico")));
+app.use("/static", express.static(__dirname + "/static"));
+
+// Generate Leaderboard Instance
+const leaderboard = new Leaderboard();
 
 // Register API routes
 const socials = require("./routes/social_media_routes");
@@ -97,8 +101,14 @@ let options = {
 };
 
 // Establish db connection
-mongo.connect(`mongodb+srv://${app.get('DB_ADMIN')}:${app.get('DB_ADMIN_PASSWORD')}@cluster0-3rcql.mongodb.net/${app.get('DB')}?retryWrites=true&authMechanism=SCRAM-SHA-1&authSource=admin`, options, (err, client) => {
-
+mongo.connect(
+  `mongodb+srv://${app.get("DB_ADMIN")}:${app.get(
+    "DB_ADMIN_PASSWORD"
+  )}@cluster0-3rcql.mongodb.net/${app.get(
+    "DB"
+  )}?retryWrites=true&authMechanism=SCRAM-SHA-1&authSource=admin`,
+  options,
+  (err, client) => {
     if (err) {
       console.log(err.stack);
       process.exit(1);
@@ -155,7 +165,7 @@ mongo.connect(`mongodb+srv://${app.get('DB_ADMIN')}:${app.get('DB_ADMIN_PASSWORD
 
           // Achievement 50 Kill
           achievement = new Achievement(
-            "Big Daddy",
+            "Terminator",
             "Destroying 50 Tanks on Call of Tanks",
             50
             //imageURL
@@ -164,9 +174,18 @@ mongo.connect(`mongodb+srv://${app.get('DB_ADMIN')}:${app.get('DB_ADMIN_PASSWORD
 
           // Achievement 100 Kill
           achievement = new Achievement(
-            "Jesus",
+            "Big Daddy",
             "Destroying 100 Tanks on Call of Tanks",
             100
+            //imageURL
+          );
+          achievements.push(achievement);
+
+          // Achievement 500 Kill
+          achievement = new Achievement(
+            "Godlike",
+            "Destroying 500 Tanks on Call of Tanks",
+            500
             //imageURL
           );
           achievements.push(achievement);
@@ -203,12 +222,29 @@ server.listen(app.get("PORT"), function() {
 var players = {};
 var projectiles = {};
 
-io.on('connection', function(socket) {
-  socket.on('new player', function() {
-    players[socket.id] = Player.createNewPlayer(socket.id, socket.id);
+io.on("connection", function(socket) {
+  socket.on("new player", function(name) {
+    players[socket.id] = Player.createNewPlayer(socket.id, name);
+    leaderboard.addPlayer(players[socket.id]);
+    leaderboard.sortPlayers();
+    io.sockets.emit("update scoreboard", leaderboard.getPlayers());
   });
 
-  socket.on('disconnect', function() {
+  socket.on("remove player", function(id) {
+    if (leaderboard.playerExists(id)) {
+      leaderboard.removePlayer(players[id]);
+      leaderboard.sortPlayers();
+      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+    }
+    delete players[id];
+  });
+
+  socket.on("disconnect", function() {
+    if (leaderboard.playerExists(socket.id)) {
+      leaderboard.removePlayer(players[socket.id]);
+      leaderboard.sortPlayers();
+      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+    }
     delete players[socket.id];
   });
 
@@ -218,11 +254,11 @@ io.on('connection', function(socket) {
 
     if (data.left) {
       // player.x -= 5;
-      player.rotate -= player.speed * Math.PI/180;
+      player.rotate -= (player.speed * Math.PI) / 180;
     }
     if (data.right) {
       // player.x += 5;
-      player.rotate += player.speed * Math.PI/180;
+      player.rotate += (player.speed * Math.PI) / 180;
     }
 
     if (data.up) {
@@ -239,26 +275,31 @@ io.on('connection', function(socket) {
 
     // Check if the player has died
     if(player.hp <= 0) {
+      // Remove Player and update leaderboard
+      if (leaderboard.playerExists(socket.id)) {
+        leaderboard.removePlayer(players[socket.id]);
+        leaderboard.sortPlayers();
+        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      }
+      socket.emit('show dead modal', player);
       delete players[socket.id];
-      socket.emit('show dead modal');
     }
   });
 
   // Projectile
   socket.on('shoot', function(){
     var player = players[socket.id] || {};
-    var d = new Date();
-    if(!projectiles[socket.id]){
+    if (!projectiles[socket.id]) {
       projectiles[socket.id] = {
         player: socket.id,
         hitbox: 10,
-        x: player.x + player.width/2,
-        y: player.y + player.height/2 - 2.5,
+        x: player.x + player.width / 2,
+        y: player.y + player.height / 2 - 2.5,
         xvel: player.shot_speed * Math.cos(player.rotate),
         yvel: player.shot_speed * Math.sin(player.rotate),
         distance: 0,
         max_distance: player.range
-      } 
+      };
     }
   });
 
@@ -300,11 +341,61 @@ io.on('connection', function(socket) {
   //   }
   // })
 
+  socket.on("move projectile", function() {
+    for (let id in projectiles) {
+      let projectile = projectiles[id];
+      // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
+      if (projectile.distance < projectile.max_distance) {
+        projectile.x += projectile.xvel;
+        projectile.y += projectile.yvel;
+        projectile.distance += Math.sqrt(
+        projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel
+        );
+      } else {
+        delete projectiles[projectile.player];
+      }
+    }
+  });
+
+  // @param data.projectileId - Socket Id of the player who shot the projectile
+  // @param data.targetId     - Socket Id of the player hit by the projectile
+  socket.on("tank hit", function(data) {
+    delete projectiles[data.projectileId]; // Delete Projectile
+
+    // If target exists, they take damage
+    if (players[data.targetId]) {
+      if (players[data.targetId].hp >= 0) {
+        players[data.targetId].hp -= 0.5;
+      }
+
+      // If target died from damage, increment shooter's kill counter
+      if (players[data.targetId].hp == 0) {
+        players[data.projectileId].kills += 1;
+        leaderboard.updatePlayer(players[data.projectileId]);
+      }
+    }
+  });
+
+  // Delete player and show dead modal
+  socket.on("player died", function(deadPlayerId) {
+    if (socket.id === deadPlayerId) {
+      let playerCopy = players[deadPlayerId];
+      socket.emit("show dead modal", playerCopy);
+
+      // Remove Player and update leaderboard
+      if (leaderboard.playerExists(deadPlayerId)) {
+        leaderboard.removePlayer(players[deadPlayerId]);
+        leaderboard.sortPlayers();
+        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      }
+      delete players[deadPlayerId];
+    }
+  });
 });
 
 /* Game updates the state of all players at a rate of FPS */
 setInterval(function() {
-  io.sockets.emit('state', { players, projectiles });
+  io.sockets.emit("state", { players, projectiles });
 }, 1000 / FPS);
 
 

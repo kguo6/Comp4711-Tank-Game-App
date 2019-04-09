@@ -12,15 +12,37 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Call of Tanks" />
     <meta property="og:description" content="Explode your friends!" />
-    <meta property="og:image" content="http://kennyguo.com/static/images/call_of_tanks_logo.png" />
+    <meta property="og:image" content="http://kennyguo.com/static/assets/images/call_of_tanks_logo.png" />
 </head>
 
 <body>
-    <!-- modal content -->
+    <!-- login modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-content">WELCOME TO</h2>
+            <h2 class="text-content">CALL OF TANKS: SIEGE WARFARE</h2>
+            <!-- <img id="logo" src="/static/assets/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare"> -->
+            <div id="login-forms">
+                <form autocomplete="off">
+                    <input id="guest-username" type="text" placeholder="username" name="username" required>
+                    <button id="guest-login" class="login-button" type="submit">Login as Guest</button>
+                </form>
+                <form>
+                    <input type="text" placeholder="username" name="username" required>
+                    <input type="text" placeholder="email" name="uname" required>
+                    <input type="password" placeholder="password" name="psw" required>
+                    <button id="core-login" class="login-button" type="submit">Login Via Core App</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end login modal -->
+
+    <!-- endgame modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <h2 class="text-content">GAME OVER</h2>
-            <p class="text-content">Better luck next time "username"! Your score was 420!</p>
+            <p id="modal-msg" class="text-content">Better luck next time undefined! Your score was 0!</p>
 
             <div id="socials">
                 <div>
@@ -37,20 +59,32 @@
             </div>
         </div>
     </div>
-    <!-- end modal content -->
+    <!-- end endgame modal -->
 
     <div id="header">
-        <!-- TEMP -->
-        <button onclick="die()">DIE</button>
+        <div>
+            <button id="logout" class="logout-button">Log out</button>
+            <input id="mute-audio" type="image" src="/static/assets/images/mute_audio.png" />
+            <input id="play-audio" type="image" src="/static/assets/images/play_audio.png" />
+        </div>
+
+        <audio id="background_audio" class="audio_clip" controls>
+            <source src="/static/assets/audio/battle_music.ogg" type="audio/ogg">
+            Your browser does not support the audio element.
+        </audio>
+        <audio id="explosion" class="audio_clip" controls>
+            <source src="/static/assets/audio/tank_explosion.mp3" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
     </div>
 
     <div id="main-content">
         <div id="leaderboard">
-            <img id="logo" src="/static/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare">
+            <img id="logo" src="/static/assets/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare">
             <h4 class="text-content title">LEADERBOARD</h4 id="leaderboard-title">
             <!-- TEMP -->
             <table id="scoreboard">
-                <tr>
+                <!-- <tr>
                     <th>Rank</th>
                     <th>Username</th>
                     <th>Score</th>
@@ -84,12 +118,13 @@
                     <td>6</td>
                     <td>bigballer</td>
                     <td>12</td>
-                </tr>
+                </tr> -->
             </table>
         </div>
 
         <canvas id="canvas"></canvas>
 
+        <!-- Leaving out optional feature -->
         <div id="chat">
             <h4 id="chat-span" class="text-content">CHAT</h4>
         </div>
