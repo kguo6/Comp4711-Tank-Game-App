@@ -221,8 +221,8 @@ var players = {};
 var projectiles = {};
 
 io.on("connection", function(socket) {
-  socket.on("new player", function() {
-    players[socket.id] = Player.createNewPlayer(socket.id, socket.id);
+  socket.on("new player", function(name) {
+    players[socket.id] = Player.createNewPlayer(socket.id, name);
     leaderboard.addPlayer(players[socket.id]);
     leaderboard.sortPlayers();
     io.sockets.emit("update scoreboard", leaderboard.getPlayers());

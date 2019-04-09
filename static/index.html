@@ -16,7 +16,29 @@
 </head>
 
 <body>
-    <!-- modal content -->
+    <!-- login modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-content">WELCOME TO</h2>
+            <h2 class="text-content">CALL OF TANKS: SIEGE WARFARE</h2>
+            <!-- <img id="logo" src="/static/assets/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare"> -->
+            <div id="login-forms">
+                <form>
+                    <input id="guest-username" type="text" placeholder="username" name="username" required>
+                    <button id="guest-login" class="login-button" type="submit">Login as Guest</button>
+                </form>
+                <form>
+                    <input type="text" placeholder="username" name="username" required>
+                    <input type="text" placeholder="email" name="uname" required>
+                    <input type="password" placeholder="password" name="psw" required>
+                    <button id="core-login" class="login-button" type="submit">Login Via Core App</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end login modal -->
+
+    <!-- endgame modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <h2 class="text-content">GAME OVER</h2>
@@ -37,11 +59,14 @@
             </div>
         </div>
     </div>
-    <!-- end modal content -->
+    <!-- end endgame modal -->
 
     <div id="header">
-        <input id="mute-audio" type="image" src="/static/assets/images/mute_audio.png" />
-        <input id="play-audio" type="image" src="/static/assets/images/play_audio.png" />
+        <div>
+            <button id="logout" class="logout-button">Log out</button>
+            <input id="mute-audio" type="image" src="/static/assets/images/mute_audio.png" />
+            <input id="play-audio" type="image" src="/static/assets/images/play_audio.png" />
+        </div>
 
         <audio id="background_audio" class="audio_clip" controls>
             <source src="/static/assets/audio/battle_music.ogg" type="audio/ogg">
@@ -99,6 +124,7 @@
 
         <canvas id="canvas"></canvas>
 
+        <!-- Leaving out optional feature -->
         <div id="chat">
             <h4 id="chat-span" class="text-content">CHAT</h4>
         </div>
