@@ -115,6 +115,7 @@ var span = document.getElementsByClassName("close")[0];
 socket.on('state', function (state) {
     context.clearRect(0, 0, 1000, 600);
 
+    // console.log(socket.id);
     /* Updates display of all players */
     for (var id in state.players) {
         var player = state.players[id];
@@ -133,8 +134,8 @@ socket.on('state', function (state) {
         context.fillRect(projectile.x, projectile.y, 5, 5);
     }
 
-    socket.emit('update tank', movement);
     socket.emit('update projectile');
+    socket.emit('update tank', movement);
     // socket.emit('update dead players');
 });
 

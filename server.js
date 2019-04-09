@@ -20,6 +20,8 @@ const Achievement = require("./database/models/Achievement");
 const collectionUser = "users";
 const collectionAchievements = "achievements";
 const FPS = 60;
+const CANVAS_HEIGHT = 600 - 15;
+const CANVAS_WIDTH = 1000 - 15;
 
 // Set development port
 const port = process.argv[2] == "-development" ? 8888 : 80;
@@ -210,6 +212,7 @@ io.on('connection', function(socket) {
     delete players[socket.id];
   });
 
+  // Tank movement and life status
   socket.on('update tank', function(data) {
     var player = players[socket.id] || {};
 
@@ -225,11 +228,13 @@ io.on('connection', function(socket) {
     if (data.up) {
       player.x += player.speed * Math.cos(player.rotate);
       player.y += player.speed * Math.sin(player.rotate);
+      checkInBounds(player.x, player.y, player.id);
     }
 
     if (data.down) {
       player.x -= player.speed * Math.cos(player.rotate);
       player.y -= player.speed * Math.sin(player.rotate);
+      checkInBounds(player.x, player.y, player.id);
     }
 
     // Check if the player has died
@@ -239,6 +244,7 @@ io.on('connection', function(socket) {
     }
   });
 
+  // Projectile
   socket.on('shoot', function(){
     var player = players[socket.id] || {};
     var d = new Date();
@@ -348,4 +354,25 @@ return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
 */
 function getEuclideanDist(x1, y1, x2, y2,) {
 return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
+}
+
+/**
+ * Checks if a player's position is within bounds.
+ * @param {*} x coordinate of the tank's x
+ * @param {*} y coordinate of the tank's y
+ * @param {*} playerId SocketId of the player
+ */
+function checkInBounds(x, y, playerId) {
+  if(x < 0) {
+    players[playerId].x = 0;
+  }
+  if(x > CANVAS_WIDTH) {
+    players[playerId].x = CANVAS_WIDTH;
+  }
+  if(y < 0) {
+    players[playerId].y = 0;
+  }
+  if(y > CANVAS_HEIGHT) {
+    players[playerId].y = CANVAS_HEIGHT;
+  }
 }
