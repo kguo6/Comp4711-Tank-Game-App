@@ -201,12 +201,12 @@ document.getElementById("slack-button").addEventListener("click", () => {
   }
 });
 
-// Updates all game events at a rate of FPS
-setInterval(function () {
-    socket.emit('update tank', movement);
-    socket.emit('update projectile');
+// Updates all game events at a rate of FPS, may not be good
+// setInterval(function () {
+    // socket.emit('update tank', movement);
+    // socket.emit('update projectile');
     // socket.emit('update dead players');
-}, 1000 / FPS);
+// }, 1000 / FPS);
 
 // Set canvas dimensions
 var canvas = document.getElementById("canvas");
@@ -244,9 +244,9 @@ socket.on('state', function (state) {
     }
 
     // Emitting here would sync with the current FPS from server,
-    // but I've noticed some issues with the projectiles
+    // but may see some issues with the database
     // socket.emit('update projectile');
-    // socket.emit('update tank', movement);
+    socket.emit('update tank', movement);
     // socket.emit('update dead players');
 });
 
