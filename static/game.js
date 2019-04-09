@@ -86,8 +86,12 @@ guestLoginBtn.addEventListener("click", () => {
   name = document.getElementById("guest-username").value;
 });
 
-// Unsure as to why this cant be put into Guest Login Logic
-socket.emit("new player", name);
+// Creates new player if user is logged in
+let checkLoggedIn = (() => {
+    if (sessionStorage.getItem("logged") == 1) {
+        socket.emit("new player", name);
+    }
+})();
 
 // Logout button
 logoutBtn.addEventListener("click", () => {
