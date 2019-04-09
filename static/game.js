@@ -217,7 +217,7 @@ var context = canvas.getContext("2d");
 var modal = document.getElementById("myModal");
 var span = document.getElementsByClassName("close")[0];
 let image = new Image();
-image.src = "./images/tank.png";
+image.src = "./assets/images/tank.png";
 
 // State of a client being updated at FPS
 socket.on('state', function (state) {
