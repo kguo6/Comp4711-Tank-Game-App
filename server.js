@@ -202,8 +202,8 @@ var players = {};
 var projectiles = {};
 
 io.on('connection', function (socket) {
-    socket.on('new player', function () {
-        players[socket.id] = Player.createNewPlayer(socket.id, socket.id);
+    socket.on('new player', function (name) {
+        players[socket.id] = Player.createNewPlayer(socket.id, name);
     });
 
     socket.on('disconnect', function () {
@@ -235,7 +235,6 @@ io.on('connection', function (socket) {
 
     socket.on('shoot', function () {
         var player = players[socket.id] || {};
-        var d = new Date();
         if (!projectiles[socket.id]) {
             projectiles[socket.id] = {
                 player: socket.id,
@@ -271,7 +270,9 @@ io.on('connection', function (socket) {
 
         // If target exists, they take damage
         if (players[data.targetId]) {
-            players[data.targetId].hp -= 0.5;
+            if(players[data.targetId].hp >= 0){
+                players[data.targetId].hp -= 0.5;
+            }
 
             // If target died from damage, increment shooter's kill counter
             if (players[data.targetId].hp == 0) {

@@ -23,8 +23,14 @@ let explosion = document.getElementById("explosion");
 backgroundAudio.volume = 0.4;
 explosion.volume = 0.4;
 
+// Audio buttons
 let muteButton = document.getElementById("mute-audio");
 let playButton = document.getElementById("play-audio");
+
+// Login/out btns
+let loginModal = document.getElementById('loginModal');
+let guestLoginBtn = document.getElementById('guest-login');
+let logoutBtn = document.getElementById('logout');
 
 // Loop background music
 let playAudio = (() => {
@@ -47,17 +53,40 @@ function checkBrowserSize() {
     if (getWidth() > 1400) {
         document.getElementById('leaderboard').style = "display: block;";
     }
-    if (getWidth() > 1700) {
+    if (getWidth() > 1900) {
         document.getElementById('chat').style = "display: block;";
     }
-
     if (getWidth() < 1400) {
         document.getElementById('leaderboard').style = "display: none;";
     }
-    if (getWidth() < 1700) {
+    if (getWidth() < 1900) {
         document.getElementById('chat').style = "display: none;";
     }
 }
+
+let showLogin = (() => {
+    if (sessionStorage.getItem("logged") == 0 || sessionStorage.getItem("logged") === null) {
+        loginModal.style.display = "inline";
+        logoutBtn.style.display = "none";
+    } else {
+        loginModal.style.display = "none";
+        logoutBtn.style.display = "inline";
+    }
+})();
+
+// Guest login button
+guestLoginBtn.addEventListener("click", () => {
+    sessionStorage.setItem("logged", 1);
+    name = document.getElementById('guest-username').value;
+});
+
+socket.emit('new player', name);
+
+// Logout button
+logoutBtn.addEventListener("click", () => {
+    sessionStorage.setItem("logged", 0);
+    location.reload();
+});
 
 document.addEventListener('keydown', function (event) {
     switch (event.keyCode) {
@@ -145,8 +174,6 @@ document.getElementById("slack-button").addEventListener("click", () => {
     }
 });
 
-socket.emit('new player');
-
 setInterval(function () {
     socket.emit('movement', movement);
 }, 1000 / 60);
@@ -160,6 +187,8 @@ var context = canvas.getContext('2d');
 // Set modal areas
 var modal = document.getElementById('myModal');
 var span = document.getElementsByClassName("close")[0];
+let image = new Image();
+image.src = './images/tank.png';
 
 socket.on('state', function (state) {
     context.clearRect(0, 0, 1000, 600);
@@ -207,6 +236,7 @@ socket.on('state', function (state) {
 
 socket.on('show dead modal', function (finishedPlayer) {
     currentPlayer = finishedPlayer;
+    // TODO: sometimes this msg is displayed before currentPlayer is set, causing exception
     document.getElementById('modal-msg').innerHTML = `Better luck next time ${currentPlayer.name}! Your score was ${currentPlayer.kills}!`;
     modal.style.display = "block";
 });
@@ -221,14 +251,10 @@ socket.on('show dead modal', function (finishedPlayer) {
 function drawTank(player) {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-
-    context.fillStyle = 'green';
     context.translate(player.x + player.width / 2, player.y + player.height / 2);
     context.rotate(player.rotate);
     context.translate(-(player.x + player.width / 2), -(player.y + player.height / 2));
-    context.fillRect(player.x, player.y, player.width, player.height);
-    context.fillStyle = 'black';
-    context.fillRect(player.x + player.width / 2 + 5, player.y + player.height / 2 - 2.5, 30, 5);
+    context.drawImage(image, player.x, player.y, player.width, player.height);
 }
 
 /**
