@@ -85,7 +85,9 @@ socket.emit('new player', name);
 // Logout button
 logoutBtn.addEventListener("click", () => {
     sessionStorage.setItem("logged", 0);
-    location.reload();
+    socket.emit('remove player', socket.id);
+    loginModal.style.display = "inline";
+    logoutBtn.style.display = "none";
 });
 
 document.addEventListener('keydown', function (event) {

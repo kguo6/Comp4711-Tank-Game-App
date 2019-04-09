@@ -179,15 +179,7 @@ mongo.connect(`mongodb+srv://${app.get('DB_ADMIN')}:${app.get('DB_ADMIN_PASSWORD
                     });
             }
         });
-
-    // example
-    // app.get('DBO').collection('scores').insertOne({ name: 'kevin', score: 42 }, (err, result) => {
-    //     if (err) {
-    //         console.log(err);
-    //     }
-    // });
-}
-);
+});
 
 // Starts the server
 server.listen(app.get("PORT"), function () {
@@ -202,8 +194,13 @@ var players = {};
 var projectiles = {};
 
 io.on('connection', function (socket) {
+
     socket.on('new player', function (name) {
         players[socket.id] = Player.createNewPlayer(socket.id, name);
+    });
+
+    socket.on('remove player', function (id) {
+        delete players[id];
     });
 
     socket.on('disconnect', function () {
