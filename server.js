@@ -287,7 +287,7 @@ io.on("connection", function(socket) {
   });
 
   // Projectile
-  socket.on('shoot', function(){
+  socket.on('shoot', function() {
     var player = players[socket.id] || {};
     if (!projectiles[socket.id]) {
       projectiles[socket.id] = {
@@ -303,7 +303,7 @@ io.on("connection", function(socket) {
     }
   });
 
-  socket.on('update projectile', function(){
+  socket.on('update projectile', function() {
       for(let projectileId in projectiles){
         let projectile = projectiles[projectileId];
 
@@ -340,41 +340,6 @@ io.on("connection", function(socket) {
   //     }
   //   }
   // })
-
-  socket.on("move projectile", function() {
-    for (let id in projectiles) {
-      let projectile = projectiles[id];
-      // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
-      if (projectile.distance < projectile.max_distance) {
-        projectile.x += projectile.xvel;
-        projectile.y += projectile.yvel;
-        projectile.distance += Math.sqrt(
-        projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel
-        );
-      } else {
-        delete projectiles[projectile.player];
-      }
-    }
-  });
-
-  // @param data.projectileId - Socket Id of the player who shot the projectile
-  // @param data.targetId     - Socket Id of the player hit by the projectile
-  socket.on("tank hit", function(data) {
-    delete projectiles[data.projectileId]; // Delete Projectile
-
-    // If target exists, they take damage
-    if (players[data.targetId]) {
-      if (players[data.targetId].hp >= 0) {
-        players[data.targetId].hp -= 0.5;
-      }
-
-      // If target died from damage, increment shooter's kill counter
-      if (players[data.targetId].hp == 0) {
-        players[data.projectileId].kills += 1;
-        leaderboard.updatePlayer(players[data.projectileId]);
-      }
-    }
-  });
 
   // Delete player and show dead modal
   socket.on("player died", function(deadPlayerId) {
@@ -417,6 +382,7 @@ function tankHit(playerId, projectileId) {
     // If target died from damage, increment shooter's kill counter
     if(players[playerId].hp == 0) {
       players[projectileId].kills += 1;
+      leaderboard.updatePlayer(players[projectileId]);
     }
   }
 }

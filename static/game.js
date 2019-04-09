@@ -197,9 +197,6 @@ document.getElementById("slack-button").addEventListener("click", () => {
   }
 });
 
-// Adds a new player
-socket.emit('new player');
-
 // Updates all game events at a rate of FPS
 setInterval(function () {
     socket.emit('update tank', movement);
