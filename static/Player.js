@@ -11,7 +11,7 @@ const TANK_SHOT_RANGE = 500;
 /* Player Tank constructor */
 function Player(id, name) {
     this.id = id;
-    this.name = id; // Connect with login username later
+    this.name = name;
     this.hp = MAX_HP;
     this.hitbox = TANK_HIT_BOX_SIZE;
     this.x = 300;
