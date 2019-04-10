@@ -147,8 +147,9 @@ mongo.connect(
           achievement = new Achievement(
             "Bounty Hunter",
             "Destroying 5 Tanks on Call of Tanks",
-            5
+            5,
             //imageURL
+            "https://i.imgur.com/uxW5jIA.jpg"
           );
           achievements.push(achievement);
 
@@ -156,8 +157,9 @@ mongo.connect(
           achievement = new Achievement(
             "Executioner",
             "Destroying 10 Tanks on Call of Tanks",
-            10
+            10,
             //imageURL
+            "https://i.imgur.com/VDGfhXd.jpg"
           );
           achievements.push(achievement);
 
@@ -165,8 +167,9 @@ mongo.connect(
           achievement = new Achievement(
             "Collosus",
             "Destroying 20 Tanks on Call of Tanks",
-            20
+            20,
             //imageURL
+            "https://i.imgur.com/qaMKgJ2.jpg"
           );
           achievements.push(achievement);
 
@@ -174,8 +177,9 @@ mongo.connect(
           achievement = new Achievement(
             "Terminator",
             "Destroying 50 Tanks on Call of Tanks",
-            50
+            50,
             //imageURL
+            "https://i.imgur.com/s2p3BQy.jpg"
           );
           achievements.push(achievement);
 
@@ -183,8 +187,9 @@ mongo.connect(
           achievement = new Achievement(
             "Big Daddy",
             "Destroying 100 Tanks on Call of Tanks",
-            100
+            100,
             //imageURL
+            "https://i.imgur.com/59u5qqf.jpg"
           );
           achievements.push(achievement);
 
@@ -192,8 +197,9 @@ mongo.connect(
           achievement = new Achievement(
             "Godlike",
             "Destroying 500 Tanks on Call of Tanks",
-            500
+            500,
             //imageURL
+            "https://i.imgur.com/v899kL2.jpg"
           );
           achievements.push(achievement);
 
