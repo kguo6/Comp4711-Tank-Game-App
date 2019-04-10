@@ -438,8 +438,8 @@ setInterval(function() {
  */
 function tankHit(playerId, projectileId) {
   delete projectiles[projectileId]; // Delete Projectile
-  console.log(playerId + " was hit!");
-  console.log("projectId:" + projectileId);
+  // console.log(playerId + " was hit!");
+  // console.log("projectId:" + projectileId);
   // If target exists, they take damage
   if(players[playerId]){ 
     players[playerId].hp -= 1;
