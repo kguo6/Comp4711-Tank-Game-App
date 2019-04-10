@@ -52,6 +52,10 @@ app.get("/", function(request, response) {
   response.sendFile(path.join(__dirname, "./static/index.html"));
 });
 
+app.get("*", function(request, response){
+  response.redirect("https://" + request.headers.host + req.url);
+});
+
 // Routing - CORE APP
 app.post("/", function(request, response) {
   let id = request.body.id;
