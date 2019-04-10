@@ -60,12 +60,14 @@ window.onresize = checkBrowserSize;
 function checkBrowserSize() {
     if (getWidth() > 1400) {
         document.getElementById("leaderboard").style = "display: block;";
+        document.getElementById("mobile-control").style = "display: none;";
     }
     if (getWidth() > 1900) {
         document.getElementById("chat").style = "display: block;";
     }
     if (getWidth() < 1400) {
         document.getElementById("leaderboard").style = "display: none;";
+        document.getElementById("mobile-control").style = "display: block;";
     }
     if (getWidth() < 1900) {
         document.getElementById("chat").style = "display: none;";
