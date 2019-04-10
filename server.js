@@ -47,13 +47,15 @@ const users = require("./routes/user_routes");
 app.use("/social_media", socials);
 app.use("/user", users);
 
+app.use(function(request, response){
+  if(!request.secure){
+    response.redirect("https://" + request.headers.host + request.url);
+  }
+});
+
 // Routing - GUEST
 app.get("/", function(request, response) {
   response.sendFile(path.join(__dirname, "./static/index.html"));
-});
-
-app.get("*", function(request, response){
-  response.redirect("https://" + request.headers.host + request.url);
 });
 
 // Routing - CORE APP
