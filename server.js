@@ -53,7 +53,7 @@ app.get("/", function(request, response) {
 });
 
 app.get("*", function(request, response){
-  response.redirect("https://" + request.headers.host + req.url);
+  response.redirect("https://" + request.headers.host + request.url);
 });
 
 // Routing - CORE APP
