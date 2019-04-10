@@ -26,7 +26,7 @@ const CANVAS_WIDTH = 1000 - 15;
 const CANVAS_MIN = -15;
 
 // Set development port
-const port = process.argv[2] == "-development" ? 8888 : 80;
+const port = process.argv[2] == "-development" ? 8888 : 443;
 
 // App constants
 app.set("PORT", port);
