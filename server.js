@@ -274,6 +274,22 @@ io.on("connection", function(socket) {
       checkInBounds(player.x, player.y, player.id);
     }
 
+    if(data.shoot) {
+      var player = players[socket.id] || {};
+      if (!projectiles[socket.id]) {
+        projectiles[socket.id] = {
+          player: socket.id,
+          hitbox: 10,
+          x: player.x + player.width / 2,
+          y: player.y + player.height / 2 - 2.5,
+          xvel: player.shot_speed * Math.cos(player.rotate),
+          yvel: player.shot_speed * Math.sin(player.rotate),
+          distance: 0,
+          max_distance: player.range
+        };
+      }
+    }
+
     // Check if the player has died
     if(player.hp <= 0) {
       // Remove Player and update leaderboard
@@ -314,19 +330,7 @@ io.on("connection", function(socket) {
 
   // Projectile
   socket.on('shoot', function() {
-    var player = players[socket.id] || {};
-    if (!projectiles[socket.id]) {
-      projectiles[socket.id] = {
-        player: socket.id,
-        hitbox: 10,
-        x: player.x + player.width / 2,
-        y: player.y + player.height / 2 - 2.5,
-        xvel: player.shot_speed * Math.cos(player.rotate),
-        yvel: player.shot_speed * Math.sin(player.rotate),
-        distance: 0,
-        max_distance: player.range
-      };
-    }
+
   });
 
   socket.on('update projectile', function() {
