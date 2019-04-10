@@ -1,6 +1,6 @@
 var socket = io();
-
-let currentPlayer = {};
+let currentPlayer ={};
+const FPS = 60;
 
 socket.on("message", function(data) {
   console.log(data);
@@ -201,9 +201,12 @@ document.getElementById("slack-button").addEventListener("click", () => {
   }
 });
 
-setInterval(function() {
-  socket.emit("movement", movement);
-}, 1000 / 60);
+// Updates all game events at a rate of FPS, may not be good
+// setInterval(function () {
+    // socket.emit('update tank', movement);
+    // socket.emit('update projectile');
+    // socket.emit('update dead players');
+// }, 1000 / FPS);
 
 // Set canvas dimensions
 var canvas = document.getElementById("canvas");
@@ -217,59 +220,38 @@ var span = document.getElementsByClassName("close")[0];
 let image = new Image();
 image.src = "./assets/images/tank.png";
 
-socket.on("state", function(state) {
-  context.clearRect(0, 0, 1000, 600);
+// State of a client being updated at FPS
+socket.on('state', function (state) {
+    context.clearRect(0, 0, 1000, 600);
 
-  /* Updates state of all players */
-  for (var id in state.players) {
-    var player = state.players[id];
-    context.beginPath();
-    context.save();
-    drawTank(player);
-    context.restore();
-    context.save();
-    drawTankStats(player);
-    // Checks if the player is dead
-    if (player.hp <= 0) {
-      explosion.play();
-      socket.emit("player died", player.id);
-    }
-  }
-
-  /* Updates state of all Projectiles */
-  for (var projId in state.projectiles) {
-    var projectile = state.projectiles[projId];
-    context.beginPath();
-    context.fillRect(projectile.x, projectile.y, 5, 5);
-
-    // Iterates through all players to check for collision with this projectile
+    // console.log(socket.id);
+    /* Updates display of all players */
     for (var id in state.players) {
-      let player = state.players[id];
-      if (
-        projectile.player != player.id &&
-        checkCollision(
-          player.x,
-          player.y,
-          player.hitbox,
-          projectile.x,
-          projectile.y,
-          projectile.hitbox
-        )
-      ) {
-        let targetId = player.id;
-        let projectileId = projectile.player;
-
-        // This emit seems to fire twice, yet the logic
-        // within this If block only runs once..?
-        socket.emit("tank hit", { targetId, projectileId });
-      } else {
-        socket.emit("move projectile");
-      }
+        var player = state.players[id];
+        context.beginPath();
+        context.save();
+        drawTank(player);
+        context.restore();
+        context.save();
+        drawTankStats(player);
     }
-  }
+
+    /* Updates the display of all projectiles */
+    for(var projId in state.projectiles){
+        var projectile = state.projectiles[projId];
+        context.beginPath();
+        context.fillRect(projectile.x, projectile.y, 5, 5);
+    }
+
+    // Emitting here would sync with the current FPS from server,
+    // but may see some issues with the database
+    // socket.emit('update projectile');
+    socket.emit('update tank', movement);
+    // socket.emit('update dead players');
 });
 
 socket.on("show dead modal", function(finishedPlayer) {
+  explosion.play(); // Play explosion on death
   currentPlayer = finishedPlayer;
   // TODO: sometimes this msg is displayed before currentPlayer is set, causing exception
   document.getElementById("modal-msg").innerHTML = `Better luck next time ${
@@ -371,38 +353,6 @@ function drawTankStats(player) {
   context.font = "12px Arial";
   context.textAlign = "center";
   context.fillText(player.name, player.x + 15, player.y - 12);
-}
-
-/**
- * Checks if a projectile's hitbox collides with a player tank's hitbox.
- * @param {*} playerX x coordinate of the player tank
- * @param {*} playerY y coordinate of the player tank
- * @param {*} playerHitBox hitbox(radius) of the player tank
- * @param {*} shotX x coordinate of the projectile
- * @param {*} shotY y coordinate of the projectile
- * @param {*} shotHitBox hitbox(radius) of the projectile
- */
-function checkCollision(
-  playerX,
-  playerY,
-  playerHitBox,
-  shotX,
-  shotY,
-  shotHitBox
-) {
-  let minDist = playerHitBox + shotHitBox;
-  return getEuclideanDist(playerX, playerY, shotX, shotY) < minDist * minDist;
-}
-
-/**
- * Returns the Euclidean distance between 2 x and y coordinates.
- * @param {*} x1 x coordinate of the 1st point
- * @param {*} y1 y coordinate of the 1st point
- * @param {*} x2 x coordinate of the 2nd point
- * @param {*} y2 y coordinate of the 2nd point
- */
-function getEuclideanDist(x1, y1, x2, y2) {
-  return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
 
 function getMousePos(canvas, evt) {

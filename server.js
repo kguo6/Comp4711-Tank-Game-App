@@ -21,6 +21,9 @@ const Leaderboard = require("./src/Leaderboard");
 const collectionUser = "users";
 const collectionAchievements = "achievements";
 const FPS = 60;
+const CANVAS_HEIGHT = 600 - 15;
+const CANVAS_WIDTH = 1000 - 15;
+const CANVAS_MIN = -15;
 
 // Set development port
 const port = process.argv[2] == "-development" ? 8888 : 80;
@@ -246,7 +249,8 @@ io.on("connection", function(socket) {
     delete players[socket.id];
   });
 
-  socket.on("movement", function(data) {
+  // Tank movement and life status
+  socket.on('update tank', function(data) {
     var player = players[socket.id] || {};
 
     if (data.left) {
@@ -261,15 +265,55 @@ io.on("connection", function(socket) {
     if (data.up) {
       player.x += player.speed * Math.cos(player.rotate);
       player.y += player.speed * Math.sin(player.rotate);
+      checkInBounds(player.x, player.y, player.id);
     }
 
     if (data.down) {
       player.x -= player.speed * Math.cos(player.rotate);
       player.y -= player.speed * Math.sin(player.rotate);
+      checkInBounds(player.x, player.y, player.id);
+    }
+
+    // Check if the player has died
+    if(player.hp <= 0) {
+      // Remove Player and update leaderboard
+      if (leaderboard.playerExists(socket.id)) {
+        leaderboard.removePlayer(players[socket.id]);
+        leaderboard.sortPlayers();
+        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      }
+      socket.emit('show dead modal', player);
+      delete players[socket.id];
+    }
+
+    if(projectiles[socket.id] != undefined) {
+      let projectile = projectiles[socket.id];
+
+      for(let playerId in players) {
+        if(playerId != socket.id) { // Ignore if it is the current player
+          let player = players[playerId];
+          if(projectile.id != playerId &&
+            checkCollision(player.x, player.y, player.hitbox,
+                          projectile.x, projectile.y, projectile.hitbox)) {
+            tankHit(playerId, socket.id);
+          }
+        }
+      }
+
+      if(projectiles[socket.id]) {
+        if(projectile.distance < projectile.max_distance){
+          projectile.x += projectile.xvel;
+          projectile.y += projectile.yvel;
+          projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
+        } else {
+          delete projectiles[projectile.player];
+        }
+      }
     }
   });
 
-  socket.on("shoot", function() {
+  // Projectile
+  socket.on('shoot', function() {
     var player = players[socket.id] || {};
     if (!projectiles[socket.id]) {
       projectiles[socket.id] = {
@@ -285,40 +329,72 @@ io.on("connection", function(socket) {
     }
   });
 
-  socket.on("move projectile", function() {
-    for (let id in projectiles) {
-      let projectile = projectiles[id];
-      // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
-      if (projectile.distance < projectile.max_distance) {
-        projectile.x += projectile.xvel;
-        projectile.y += projectile.yvel;
-        projectile.distance += Math.sqrt(
-          projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel
-        );
-      } else {
-        delete projectiles[projectile.player];
-      }
-    }
+  socket.on('update projectile', function() {
+    
+      // for(let projectileId in projectiles){
+      //   let projectile = projectiles[projectileId];
+
+      //   if(projectile.distance < projectile.max_distance){
+      //     projectile.x += projectile.xvel;
+      //     projectile.y += projectile.yvel;
+      //     projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
+      //   } else {
+      //     delete projectiles[projectile.player];
+      //     continue;
+      //   }
+
+      //   for(let playerId in players) {
+      //     let player = players[playerId];
+      //     if(projectileId != playerId &&
+      //       checkCollision(player.x, player.y, player.hitbox,
+      //                     projectile.x, projectile.y, projectile.hitbox)) {
+      //       tankHit(playerId, projectileId);
+      //     }
+      //   }
+      //   // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
+      // }
+
+        // console.log(projectiles[socket.id]);
+        if(projectiles[socket.id] != undefined) {
+          let projectile = projectiles[socket.id];
+
+          for(let playerId in players) {
+            if(playerId != socket.id) { // Ignore if it is the current player
+              let player = players[playerId];
+              if(projectile.id != playerId &&
+                checkCollision(player.x, player.y, player.hitbox,
+                              projectile.x, projectile.y, projectile.hitbox)) {
+                tankHit(playerId, socket.id);
+              }
+            }
+          }
+
+          if(projectiles[socket.id]) {
+            if(projectile.distance < projectile.max_distance){
+              projectile.x += projectile.xvel;
+              projectile.y += projectile.yvel;
+              projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
+            } else {
+              delete projectiles[projectile.player];
+            }
+          }
+        }
+        // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
+
   });
 
-  // @param data.projectileId - Socket Id of the player who shot the projectile
-  // @param data.targetId     - Socket Id of the player hit by the projectile
-  socket.on("tank hit", function(data) {
-    delete projectiles[data.projectileId]; // Delete Projectile
+  // socket.on('update dead players', function() {
+  //   for(let playerId in players) {
 
-    // If target exists, they take damage
-    if (players[data.targetId]) {
-      if (players[data.targetId].hp >= 0) {
-        players[data.targetId].hp -= 0.5;
-      }
+  //     if(playerId === socket.id) {
+  //       if(players[playerId].hp <= 0) {
 
-      // If target died from damage, increment shooter's kill counter
-      if (players[data.targetId].hp == 0) {
-        players[data.projectileId].kills += 1;
-        leaderboard.updatePlayer(players[data.projectileId]);
-      }
-    }
-  });
+  //         delete players[playerId];
+  //         socket.emit('show dead modal');
+  //       }
+  //     }
+  //   }
+  // })
 
   // Delete player and show dead modal
   socket.on("player died", function(deadPlayerId) {
@@ -341,3 +417,75 @@ io.on("connection", function(socket) {
 setInterval(function() {
   io.sockets.emit("state", { players, projectiles });
 }, 1000 / FPS);
+
+
+/*              Helper Functions                */
+/*                                              */
+
+/**
+ * Updates the damage done to a tank and checks increments kill count if dead
+ * @param {*} playerId Id of the player who was hit by a projectile
+ * @param {*} projectileId Id of the projectile's player
+ */
+function tankHit(playerId, projectileId) {
+  delete projectiles[projectileId]; // Delete Projectile
+  console.log(playerId + " was hit!");
+  console.log("projectId:" + projectileId);
+  // If target exists, they take damage
+  if(players[playerId]){ 
+    players[playerId].hp -= 1;
+    // console.log("Damage done: " + 1);
+    // If target died from damage, increment shooter's kill counter
+    if(players[playerId].hp == 0) {
+      players[projectileId].kills += 1;
+      leaderboard.updatePlayer(players[projectileId]);
+    }
+  }
+}
+
+/**
+ * Checks if a projectile's hitbox collides with a player tank's hitbox.
+ * @param {*} playerX x coordinate of the player tank
+ * @param {*} playerY y coordinate of the player tank
+ * @param {*} playerHitBox hitbox(radius) of the player tank
+ * @param {*} shotX x coordinate of the projectile
+ * @param {*} shotY y coordinate of the projectile
+ * @param {*} shotHitBox hitbox(radius) of the projectile
+ */
+function checkCollision(playerX, playerY, playerHitBox,
+  shotX, shotY, shotHitBox) {
+let minDist = playerHitBox + shotHitBox;
+return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
+};
+
+/**
+* Returns the Euclidean distance between 2 x and y coordinates.
+* @param {*} x1 x coordinate of the 1st point
+* @param {*} y1 y coordinate of the 1st point
+* @param {*} x2 x coordinate of the 2nd point
+* @param {*} y2 y coordinate of the 2nd point
+*/
+function getEuclideanDist(x1, y1, x2, y2,) {
+return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
+}
+
+/**
+ * Checks if a player's position is within bounds.
+ * @param {*} x coordinate of the tank's x
+ * @param {*} y coordinate of the tank's y
+ * @param {*} playerId SocketId of the player
+ */
+function checkInBounds(x, y, playerId) {
+  if(x < CANVAS_MIN) {
+    players[playerId].x = CANVAS_MIN;
+  }
+  if(x > CANVAS_WIDTH) {
+    players[playerId].x = CANVAS_WIDTH;
+  }
+  if(y < CANVAS_MIN) {
+    players[playerId].y = CANVAS_MIN;
+  }
+  if(y > CANVAS_HEIGHT) {
+    players[playerId].y = CANVAS_HEIGHT;
+  }
+}
