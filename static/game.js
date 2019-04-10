@@ -1,5 +1,5 @@
 var socket = io();
-let currentPlayer ={};
+let currentPlayer = {};
 const FPS = 60;
 
 socket.on("message", function(data) {
@@ -55,12 +55,14 @@ window.onresize = checkBrowserSize;
 function checkBrowserSize() {
   if (getWidth() > 1400) {
     document.getElementById("leaderboard").style = "display: block;";
+    document.getElementById("mobile-control").style = "display: none;";
   }
   if (getWidth() > 1900) {
     document.getElementById("chat").style = "display: block;";
   }
   if (getWidth() < 1400) {
     document.getElementById("leaderboard").style = "display: none;";
+    document.getElementById("mobile-control").style = "display: block;";
   }
   if (getWidth() < 1900) {
     document.getElementById("chat").style = "display: none;";
@@ -88,9 +90,9 @@ guestLoginBtn.addEventListener("click", () => {
 
 // Creates new player if user is logged in
 let checkLoggedIn = (() => {
-    if (sessionStorage.getItem("logged") == 1) {
-        socket.emit("new player", name);
-    }
+  if (sessionStorage.getItem("logged") == 1) {
+    socket.emit("new player", name);
+  }
 })();
 
 // Logout button
@@ -128,7 +130,7 @@ document.addEventListener("keydown", function(event) {
       }
       break;
     case 32:
-      socket.emit("shoot");
+      movement.shoot = true;
       if (event.target == document.body) {
         event.preventDefault();
       }
@@ -150,7 +152,53 @@ document.addEventListener("keyup", function(event) {
     case 40: // down arrow
       movement.down = false;
       break;
+    case 32:
+      movement.shoot = false;
+      break;
   }
+});
+
+// Mobile Controls
+let upBtn = document.getElementById("up");
+let downBtn = document.getElementById("down");
+let leftBtn = document.getElementById("left");
+let rightBtn = document.getElementById("right");
+let fireBtn = document.getElementById("fire");
+
+upBtn.addEventListener("touchstart", () => {
+  movement.up = true;
+});
+upBtn.addEventListener("touchend", () => {
+  movement.up = false;
+});
+
+downBtn.addEventListener("touchstart", () => {
+  movement.down = true;
+});
+downBtn.addEventListener("touchend", () => {
+  movement.down = false;
+});
+
+leftBtn.addEventListener("touchstart", () => {
+  movement.left = true;
+});
+leftBtn.addEventListener("touchend", () => {
+  movement.left = false;
+});
+
+rightBtn.addEventListener("touchstart", () => {
+  movement.right = true;
+});
+rightBtn.addEventListener("touchend", () => {
+  movement.right = false;
+});
+
+fireBtn.addEventListener("touchstart", () => {
+  movement.shoot = true;
+});
+
+fireBtn.addEventListener("touchend", () => {
+  movement.shoot = false;
 });
 
 // Play again button
@@ -203,9 +251,9 @@ document.getElementById("slack-button").addEventListener("click", () => {
 
 // Updates all game events at a rate of FPS, may not be good
 // setInterval(function () {
-    // socket.emit('update tank', movement);
-    // socket.emit('update projectile');
-    // socket.emit('update dead players');
+// socket.emit('update tank', movement);
+// socket.emit('update projectile');
+// socket.emit('update dead players');
 // }, 1000 / FPS);
 
 // Set canvas dimensions
@@ -221,33 +269,33 @@ let image = new Image();
 image.src = "./assets/images/tank.png";
 
 // State of a client being updated at FPS
-socket.on('state', function (state) {
-    context.clearRect(0, 0, 1000, 600);
+socket.on("state", function(state) {
+  context.clearRect(0, 0, 1000, 600);
 
-    // console.log(socket.id);
-    /* Updates display of all players */
-    for (var id in state.players) {
-        var player = state.players[id];
-        context.beginPath();
-        context.save();
-        drawTank(player);
-        context.restore();
-        context.save();
-        drawTankStats(player);
-    }
+  // console.log(socket.id);
+  /* Updates display of all players */
+  for (var id in state.players) {
+    var player = state.players[id];
+    context.beginPath();
+    context.save();
+    drawTank(player);
+    context.restore();
+    context.save();
+    drawTankStats(player);
+  }
 
-    /* Updates the display of all projectiles */
-    for(var projId in state.projectiles){
-        var projectile = state.projectiles[projId];
-        context.beginPath();
-        context.fillRect(projectile.x, projectile.y, 5, 5);
-    }
+  /* Updates the display of all projectiles */
+  for (var projId in state.projectiles) {
+    var projectile = state.projectiles[projId];
+    context.beginPath();
+    context.fillRect(projectile.x, projectile.y, 5, 5);
+  }
 
-    // Emitting here would sync with the current FPS from server,
-    // but may see some issues with the database
-    // socket.emit('update projectile');
-    socket.emit('update tank', movement);
-    // socket.emit('update dead players');
+  // Emitting here would sync with the current FPS from server,
+  // but may see some issues with the database
+  // socket.emit('update projectile');
+  socket.emit("update tank", movement);
+  // socket.emit('update dead players');
 });
 
 socket.on("show dead modal", function(finishedPlayer) {
@@ -287,7 +335,6 @@ socket.on("update scoreboard", function(players) {
   tHeaderRow.appendChild(scoreTableHeader);
 
   // CONSTRUCT TABLE BODY
-
   for (let i = 0; i < players.length; i++) {
     let tr = document.createElement("tr");
 
