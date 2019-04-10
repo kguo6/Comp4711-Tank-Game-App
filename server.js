@@ -338,7 +338,7 @@ io.on("connection", function(socket) {
 
   });
 
-  socket.on('update projectile', function() {
+  // socket.on('update projectile', function() {
     
       // for(let projectileId in projectiles){
       //   let projectile = projectiles[projectileId];
@@ -364,33 +364,33 @@ io.on("connection", function(socket) {
       // }
 
         // console.log(projectiles[socket.id]);
-        if(projectiles[socket.id] != undefined) {
-          let projectile = projectiles[socket.id];
+        // if(projectiles[socket.id] != undefined) {
+        //   let projectile = projectiles[socket.id];
 
-          for(let playerId in players) {
-            if(playerId != socket.id) { // Ignore if it is the current player
-              let player = players[playerId];
-              if(projectile.id != playerId &&
-                checkCollision(player.x, player.y, player.hitbox,
-                              projectile.x, projectile.y, projectile.hitbox)) {
-                tankHit(playerId, socket.id);
-              }
-            }
-          }
+        //   for(let playerId in players) {
+        //     if(playerId != socket.id) { // Ignore if it is the current player
+        //       let player = players[playerId];
+        //       if(projectile.id != playerId &&
+        //         checkCollision(player.x, player.y, player.hitbox,
+        //                       projectile.x, projectile.y, projectile.hitbox)) {
+        //         tankHit(playerId, socket.id);
+        //       }
+        //     }
+        //   }
 
-          if(projectiles[socket.id]) {
-            if(projectile.distance < projectile.max_distance){
-              projectile.x += projectile.xvel;
-              projectile.y += projectile.yvel;
-              projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
-            } else {
-              delete projectiles[projectile.player];
-            }
-          }
-        }
+        //   if(projectiles[socket.id]) {
+        //     if(projectile.distance < projectile.max_distance){
+        //       projectile.x += projectile.xvel;
+        //       projectile.y += projectile.yvel;
+        //       projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
+        //     } else {
+        //       delete projectiles[projectile.player];
+        //     }
+        //   }
+        // }
         // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
 
-  });
+  // });
 
   // socket.on('update dead players', function() {
   //   for(let playerId in players) {
