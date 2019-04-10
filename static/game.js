@@ -128,7 +128,7 @@ document.addEventListener("keydown", function(event) {
       }
       break;
     case 32:
-      socket.emit("shoot");
+      movement.shoot = true;
       if (event.target == document.body) {
         event.preventDefault();
       }
@@ -149,6 +149,9 @@ document.addEventListener("keyup", function(event) {
       break;
     case 40: // down arrow
       movement.down = false;
+      break;
+    case 32:
+      movement.shoot = false;
       break;
   }
 });
