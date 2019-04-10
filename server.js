@@ -234,14 +234,14 @@ io.on("connection", function(socket) {
     players[socket.id] = Player.createNewPlayer(socket.id, name);
     leaderboard.addPlayer(players[socket.id]);
     leaderboard.sortPlayers();
-    io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+    // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
   });
 
   socket.on("remove player", function(id) {
     if (leaderboard.playerExists(id)) {
       leaderboard.removePlayer(players[id]);
       leaderboard.sortPlayers();
-      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
     }
     delete players[id];
   });
@@ -250,7 +250,7 @@ io.on("connection", function(socket) {
     if (leaderboard.playerExists(socket.id)) {
       leaderboard.removePlayer(players[socket.id]);
       leaderboard.sortPlayers();
-      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
     }
     delete players[socket.id];
   });
@@ -280,7 +280,7 @@ io.on("connection", function(socket) {
       checkInBounds(player.x, player.y, player.id);
     }
 
-    if (data.shoot) {
+    if(data.shoot) {
       if (!projectiles[socket.id]) {
         projectiles[socket.id] = {
           player: socket.id,
@@ -301,7 +301,7 @@ io.on("connection", function(socket) {
       if (leaderboard.playerExists(socket.id)) {
         leaderboard.removePlayer(players[socket.id]);
         leaderboard.sortPlayers();
-        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
       }
       socket.emit('show dead modal', player);
       delete players[socket.id];
@@ -415,7 +415,7 @@ io.on("connection", function(socket) {
       if (leaderboard.playerExists(deadPlayerId)) {
         leaderboard.removePlayer(players[deadPlayerId]);
         leaderboard.sortPlayers();
-        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
       }
       delete players[deadPlayerId];
     }
@@ -424,7 +424,7 @@ io.on("connection", function(socket) {
 
 /* Game updates the state of all players at a rate of FPS */
 setInterval(function() {
-  io.sockets.emit("state", { players, projectiles });
+  io.sockets.emit("state", { players, projectiles, leaderboard });
 }, 1000 / FPS);
 
 

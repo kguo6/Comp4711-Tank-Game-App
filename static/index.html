@@ -21,17 +21,16 @@
         <div class="modal-content">
             <h2 class="text-content">WELCOME TO</h2>
             <h2 class="text-content">CALL OF TANKS: SIEGE WARFARE</h2>
-            <!-- <img id="logo" src="/static/assets/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare"> -->
             <div id="login-forms">
                 <form autocomplete="off">
                     <input id="guest-username" type="text" placeholder="username" name="username" required>
-                    <button id="guest-login" class="login-button" type="submit">Login as Guest</button>
+                    <button id="guest-login" class="login-button" type="button">Login as Guest</button>
                 </form>
                 <form>
-                    <input type="text" placeholder="username" name="username" required>
-                    <input type="text" placeholder="email" name="uname" required>
-                    <input type="password" placeholder="password" name="psw" required>
-                    <button id="core-login" class="login-button" type="submit">Login Via Core App</button>
+                    <input id="core-username" type="text" placeholder="username" name="username" required>
+                    <input id="core-email" type="text" placeholder="email" name="uname" required>
+                    <input id="core-pw" type="password" placeholder="password" name="psw" required>
+                    <button id="core-login" class="login-button" type="button">Login Via Core App</button>
                 </form>
             </div>
         </div>
@@ -81,45 +80,8 @@
     <div id="main-content">
         <div id="leaderboard">
             <img id="logo" src="/static/assets/images/call_of_tanks_logo.png" alt="Call of Tanks: Siege Warfare">
-            <h4 class="text-content title">LEADERBOARD</h4 id="leaderboard-title">
-            <!-- TEMP -->
-            <table id="scoreboard">
-                <!-- <tr>
-                    <th>Rank</th>
-                    <th>Username</th>
-                    <th>Score</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>kachow</td>
-                    <td>64</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>superduper</td>
-                    <td>43</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>krusher99</td>
-                    <td>41</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>chungus</td>
-                    <td>32</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>baddie</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>bigballer</td>
-                    <td>12</td>
-                </tr> -->
-            </table>
+            <h4 id="leaderboard-title" class="text-content title">LEADERBOARD</h4>
+            <table id="scoreboard"></table>
         </div>
 
         <canvas id="canvas"></canvas>
@@ -128,11 +90,43 @@
         <div id="chat">
             <h4 id="chat-span" class="text-content">CHAT</h4>
         </div>
-    </div>
 
-    <div id="footer">
-        <h3 class="text-content">INSTRUCTIONS:</h3>
-        <h4 class="text-content">arrow keys - movement &nbsp;&nbsp;&nbsp; spacebar - shoot</h4>
+        <div id="instruction">
+              <h3 class="text-content">arrow keys - movement &nbsp;&nbsp;&nbsp; spacebar - shoot</h3>
+        </div>
+      
+        <div id="mobile-control">
+            <div id="mobile-movement">
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <button id="up" class="mobile-movement-button">&uarr;</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="left" class="mobile-movement-button">&larr;</button>
+                        </td>
+                        <td></td>
+                        <td>
+                            <button id="right" class="mobile-movement-button">&rarr;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <button id="down" class="mobile-movement-button">&darr;</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="mobile-shoot">
+                <button id="fire" class="mobile-fire-button">Fire</button>
+            </div>
+        </div>
     </div>
 </body>
 
