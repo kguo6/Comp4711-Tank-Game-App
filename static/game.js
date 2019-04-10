@@ -89,9 +89,12 @@ let showLogin = (() => {
 
 // Guest login button
 guestLoginBtn.addEventListener("click", () => {
-    sessionStorage.setItem("logged", 1);
     name = document.getElementById("guest-username").value;
-    location.reload();
+
+    if (name != "") {
+        sessionStorage.setItem("logged", 1);
+        location.reload();
+    }
 });
 
 // Core app login button
@@ -100,21 +103,23 @@ coreLoginBtn.addEventListener("click", () => {
     let email = document.getElementById("core-email").value;
     let pw = document.getElementById("core-pw").value; // hash?
 
-    // Generate token
-    let getToken = new XMLHttpRequest();
-    getToken.open("POST", CORE_APPLICATION_GET_TOKEN);
-    getToken.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    setTimeout(5000);
+    if (name != "") {
+        // Generate token
+        let getToken = new XMLHttpRequest();
+        getToken.open("POST", CORE_APPLICATION_GET_TOKEN);
+        getToken.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        setTimeout(5000);
 
-    getToken.onreadystatechange = () => {
-        if (getToken.readyState == 4 && getToken.status == 200) {
-            let apiToken = getToken.responseText;
-            // TODO: DO CORE LOGIN AUTH + GET PLAYER ID
-            sessionStorage.setItem("logged", 1);
-            location.reload();
-        }
-    };
-    getToken.send(`apikey=${CORE_APPLICATION_API_KEY}`);
+        getToken.onreadystatechange = () => {
+            if (getToken.readyState == 4 && getToken.status == 200) {
+                let apiToken = getToken.responseText;
+                // TODO: DO CORE LOGIN AUTH + GET PLAYER ID
+                sessionStorage.setItem("logged", 1);
+                location.reload();
+            }
+        };
+        getToken.send(`apikey=${CORE_APPLICATION_API_KEY}`);
+    }
 });
 
 // Creates new player if user is logged in
