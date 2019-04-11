@@ -194,8 +194,8 @@ var players = {};
 var projectiles = {};
 
 io.on("connection", function(socket) {
-  socket.on("new player", function(name) {
-    players[socket.id] = Player.createNewPlayer(socket.id, name);
+  socket.on("new player", function(name, externalId) {
+    players[socket.id] = Player.createNewPlayer(socket.id, name, externalId);
     leaderboard.addPlayer(players[socket.id]);
     leaderboard.sortPlayers();
     // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
@@ -207,6 +207,9 @@ io.on("connection", function(socket) {
       leaderboard.sortPlayers();
       // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
     }
+    if (players[id].external_id != null) {
+        updatePlayerProfile(players[id].external_id, players[id].kills);
+    }
     delete players[id];
   });
 
@@ -215,6 +218,9 @@ io.on("connection", function(socket) {
       leaderboard.removePlayer(players[socket.id]);
       leaderboard.sortPlayers();
       // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+    }
+    if (players[socket.id].external_id != null) {
+        updatePlayerProfile(players[socket.id].external_id, players[socket.id].kills);
     }
     delete players[socket.id];
   });
@@ -259,18 +265,6 @@ io.on("connection", function(socket) {
       }
     }
 
-    // Check if the player has died
-    if(player.hp <= 0) {
-      // Remove Player and update leaderboard
-      if (leaderboard.playerExists(socket.id)) {
-        leaderboard.removePlayer(players[socket.id]);
-        leaderboard.sortPlayers();
-        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
-      }
-      socket.emit('show dead modal', player);
-      delete players[socket.id];
-    }
-
     if(projectiles[socket.id] != undefined) {
       let projectile = projectiles[socket.id];
 
@@ -295,12 +289,29 @@ io.on("connection", function(socket) {
         }
       }
     }
-  });
+
+    // Check if the player has died
+    if(player.hp <= 0) {
+        // Update player stats if player is logged in from core app 
+        if (player.external_id != null) {
+            updatePlayerProfile(player.external_id, player.kills);
+        }
+
+        // Remove Player and update leaderboard
+        if (leaderboard.playerExists(socket.id)) {
+        leaderboard.removePlayer(players[socket.id]);
+        leaderboard.sortPlayers();
+        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+        }
+        socket.emit('show dead modal', player);
+        delete players[socket.id];
+    }
+});
 
   // Projectile
-  socket.on('shoot', function() {
+//   socket.on('shoot', function() {
 
-  });
+//   });
 
   // socket.on('update projectile', function() {
     
@@ -369,21 +380,23 @@ io.on("connection", function(socket) {
   //   }
   // })
 
-  // Delete player and show dead modal
-  socket.on("player died", function(deadPlayerId) {
-    if (socket.id === deadPlayerId) {
-      let playerCopy = players[deadPlayerId];
-      socket.emit("show dead modal", playerCopy);
+//   // Delete player and show dead modal
+//   socket.on("player died", function(deadPlayerId) {
+//     if (socket.id === deadPlayerId) {
+//       let playerCopy = players[deadPlayerId];
 
-      // Remove Player and update leaderboard
-      if (leaderboard.playerExists(deadPlayerId)) {
-        leaderboard.removePlayer(players[deadPlayerId]);
-        leaderboard.sortPlayers();
-        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
-      }
-      delete players[deadPlayerId];
-    }
-  });
+
+//       socket.emit("show dead modal", playerCopy);
+
+//       // Remove Player and update leaderboard
+//       if (leaderboard.playerExists(deadPlayerId)) {
+//         leaderboard.removePlayer(players[deadPlayerId]);
+//         leaderboard.sortPlayers();
+//         // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+//       }
+//       delete players[deadPlayerId];
+//     }
+//   });
 });
 
 /* Game updates the state of all players at a rate of FPS */
@@ -391,6 +404,44 @@ setInterval(function() {
   io.sockets.emit("state", { players, projectiles, leaderboard });
 }, 1000 / FPS);
 
+// UPDATE USER WHEN GAME ENDS
+function updatePlayerProfile(id, kills) {
+
+    // Search Criteria for User
+    let searchUser = {
+        id: id
+    };
+
+    app
+        .get("DBO")
+        .collection(collectionUser)
+        .findOne(searchUser, function (err, resultUser) {
+            if (resultUser != null) {
+                let searchAchievements = {
+                    kills: { $lte: resultUser.kills + kills }
+                };
+                app
+                    .get("DBO")
+                    .collection(collectionAchievements)
+                    .find(searchAchievements)
+                    .toArray((err, resultAchievements) => {
+                        if (err) console.log(err);
+                        let values = {
+                            $set: {
+                                kills: resultUser.kills + kills,
+                                achievements: resultAchievements
+                            }
+                        };
+                        app
+                            .get("DBO")
+                            .collection(collectionUser)
+                            .updateOne(resultUser, values, (err, result) => {
+                                if (err) console.log(err);
+                            });
+                    });
+            }
+        });
+}
 
 /*              Helper Functions                */
 /*                                              */

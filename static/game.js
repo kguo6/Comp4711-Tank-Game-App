@@ -1,4 +1,5 @@
 var socket = io();
+
 let currentPlayer = {};
 
 const FPS = 60;
@@ -91,6 +92,7 @@ let showLogin = (() => {
 // Guest login button
 guestLoginBtn.addEventListener("click", () => {
     name = document.getElementById("guest-username").value;
+    sessionStorage.setItem("internalId", null);
 
     if (name != "") {
         sessionStorage.setItem("logged", 1);
@@ -129,7 +131,7 @@ coreLoginBtn.addEventListener("click", () => {
 
                     if (authUser.readyState == 4 && authUser.status == 200) {
 
-                        let id = authUser.responseText;
+                        let coreId = authUser.responseText;
 
                         // Track authenticated user in our system
                         let internalAuth = new XMLHttpRequest();
@@ -138,12 +140,15 @@ coreLoginBtn.addEventListener("click", () => {
 
                         internalAuth.onreadystatechange = () => {
                             if (internalAuth.readyState == 4 && internalAuth.status == 200) {
+
+                                sessionStorage.setItem("internalId", internalAuth.responseText);
+
                                 document.getElementById("error-msg").style.display = "none";
                                 sessionStorage.setItem("logged", 1);
                                 location.reload();
                             }
                         };
-                        internalAuth.send(`id=${id}`);
+                        internalAuth.send(`id=${coreId}`);
                     }
                 };
                 authUser.send(`token=${apiToken}&username=${email}&password=${pw}`);
@@ -167,7 +172,7 @@ function hashCode(pw) {
 // Creates new player if user is logged in
 let checkLoggedIn = (() => {
     if (sessionStorage.getItem("logged") == 1) {
-        socket.emit("new player", name);
+        socket.emit("new player", name, sessionStorage.getItem("internalId"));
     }
 })();
 

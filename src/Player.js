@@ -9,9 +9,10 @@ const TANK_SHOT_SPEED = 9;
 const TANK_SHOT_RANGE = 500;
 
 /* Player Tank constructor */
-function Player(id, name) {
+function Player(id, name, externalId) {
   this.id = id;
-  this.name = name; // Connect with login username later
+  this.name = name;
+  this.external_id = externalId;
   this.hp = MAX_HP;
   this.hitbox = TANK_HIT_BOX_SIZE;
   this.x = generateRandomInt(1000);
@@ -26,8 +27,8 @@ function Player(id, name) {
 }
 
 /* Generates and returns new Player */
-Player.createNewPlayer = function(id, name) {
-  return new Player(id, name);
+Player.createNewPlayer = function(id, name, externalId) {
+  return new Player(id, name, externalId);
 };
 
 /**
