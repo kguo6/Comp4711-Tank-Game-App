@@ -52,48 +52,6 @@ app.get("/", function(request, response) {
   response.sendFile(path.join(__dirname, "./static/index.html"));
 });
 
-// Routing - CORE APP
-app.post("/", function(request, response) {
-  let id = request.body.id;
-  let name = request.body.username;
-
-  // Validate Fields
-  if (id == null || name == null || id == "" || name == "") {
-    response.status(500).send("ERROR: Unable to Create New User.");
-    return;
-  }
-
-  // Check If User Already Exists
-  let searchUser = {
-    id: id,
-    name: name
-  };
-
-  // Find User in Database
-  request.app
-    .get("DBO")
-    .collection(collectionUser)
-    .findOne(searchUser, function(err, result) {
-      if (result == null) {
-        const newUser = new User(id, name, 0);
-        request.app
-          .get("DBO")
-          .collection(collectionUser)
-          .insertOne(newUser, (err, result) => {
-            if (err) {
-              response.status(500).send(err);
-            } else {
-              response.cookie("userID", id);
-              response.sendFile(path.join(__dirname, "./static/index.html"));
-            }
-          });
-      } else {
-        response.cookie("userID", id);
-        response.sendFile(path.join(__dirname, "./static/index.html"));
-      }
-    });
-});
-
 // Set db connection options
 let options = {
   useNewUrlParser: true,

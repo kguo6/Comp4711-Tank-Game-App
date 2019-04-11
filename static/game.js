@@ -4,6 +4,7 @@ let currentPlayer = {};
 const FPS = 60;
 const CORE_APPLICATION_API_KEY = "tM4iRo8tujX6d1RyEP9DcdhPWbpocX";
 const CORE_APPLICATION_GET_TOKEN = "https://us-central1-coreapicomp4711.cloudfunctions.net/api/get_token";
+const CORE_APPLICATION_LOGIN = "https://us-central1-coreapicomp4711.cloudfunctions.net/api/verify_user";
 
 socket.on("message", function (data) {
     console.log(data);
@@ -75,16 +76,16 @@ function checkBrowserSize() {
 }
 
 let showLogin = (() => {
-  if (
-    sessionStorage.getItem("logged") == 0 ||
-    sessionStorage.getItem("logged") === null
-  ) {
-    loginModal.style.display = "inline";
-    logoutBtn.style.display = "none";
-  } else {
-    loginModal.style.display = "none";
-    logoutBtn.style.display = "inline";
-  }
+    if (
+        sessionStorage.getItem("logged") == 0 ||
+        sessionStorage.getItem("logged") === null
+    ) {
+        loginModal.style.display = "inline";
+        logoutBtn.style.display = "none";
+    } else {
+        loginModal.style.display = "none";
+        logoutBtn.style.display = "inline";
+    }
 })();
 
 // Guest login button
@@ -99,34 +100,75 @@ guestLoginBtn.addEventListener("click", () => {
 
 // Core app login button
 coreLoginBtn.addEventListener("click", () => {
+    
     name = document.getElementById("core-username").value;
     let email = document.getElementById("core-email").value;
-    let pw = document.getElementById("core-pw").value; // hash?
+    let pw = hashCode(document.getElementById("core-pw").value);
 
     if (name != "") {
-        // Generate token
+        // Generate api token
         let getToken = new XMLHttpRequest();
         getToken.open("POST", CORE_APPLICATION_GET_TOKEN);
         getToken.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        setTimeout(5000);
 
         getToken.onreadystatechange = () => {
             if (getToken.readyState == 4 && getToken.status == 200) {
+
                 let apiToken = getToken.responseText;
-                // TODO: DO CORE LOGIN AUTH + GET PLAYER ID
-                sessionStorage.setItem("logged", 1);
-                location.reload();
+
+                // Authenticate user via core app
+                let authUser = new XMLHttpRequest();
+                authUser.open("POST", CORE_APPLICATION_LOGIN);
+                authUser.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                authUser.onreadystatechange = () => {
+                    if (authUser.status == 404) {
+                        // display invalid credentials msg
+                        document.getElementById("error-msg").style.display = "inline";
+                    }
+
+                    if (authUser.readyState == 4 && authUser.status == 200) {
+
+                        let id = authUser.responseText;
+
+                        // Track authenticated user in our system
+                        let internalAuth = new XMLHttpRequest();
+                        internalAuth.open("POST", "/user/track_user", true);
+                        internalAuth.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                        internalAuth.onreadystatechange = () => {
+                            if (internalAuth.readyState == 4 && internalAuth.status == 200) {
+                                document.getElementById("error-msg").style.display = "none";
+                                sessionStorage.setItem("logged", 1);
+                                location.reload();
+                            }
+                        };
+                        internalAuth.send(`id=${id}`);
+                    }
+                };
+                authUser.send(`token=${apiToken}&username=${email}&password=${pw}`);
             }
         };
         getToken.send(`apikey=${CORE_APPLICATION_API_KEY}`);
     }
 });
 
+function hashCode(pw) {
+    var hash = 0;
+    if (pw.length == 0) return hash;
+    for (i = 0; i < pw.length; i++) {
+        char = pw.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
 // Creates new player if user is logged in
 let checkLoggedIn = (() => {
-  if (sessionStorage.getItem("logged") == 1) {
-    socket.emit("new player", name);
-  }
+    if (sessionStorage.getItem("logged") == 1) {
+        socket.emit("new player", name);
+    }
 })();
 
 // Logout button
@@ -200,39 +242,39 @@ let rightBtn = document.getElementById("right");
 let fireBtn = document.getElementById("fire");
 
 upBtn.addEventListener("touchstart", () => {
-  movement.up = true;
+    movement.up = true;
 });
 upBtn.addEventListener("touchend", () => {
-  movement.up = false;
+    movement.up = false;
 });
 
 downBtn.addEventListener("touchstart", () => {
-  movement.down = true;
+    movement.down = true;
 });
 downBtn.addEventListener("touchend", () => {
-  movement.down = false;
+    movement.down = false;
 });
 
 leftBtn.addEventListener("touchstart", () => {
-  movement.left = true;
+    movement.left = true;
 });
 leftBtn.addEventListener("touchend", () => {
-  movement.left = false;
+    movement.left = false;
 });
 
 rightBtn.addEventListener("touchstart", () => {
-  movement.right = true;
+    movement.right = true;
 });
 rightBtn.addEventListener("touchend", () => {
-  movement.right = false;
+    movement.right = false;
 });
 
 fireBtn.addEventListener("touchstart", () => {
-  movement.shoot = true;
+    movement.shoot = true;
 });
 
 fireBtn.addEventListener("touchend", () => {
-  movement.shoot = false;
+    movement.shoot = false;
 });
 
 // Play again button
@@ -303,33 +345,32 @@ let image = new Image();
 image.src = "./assets/images/tank.png";
 
 // State of a client being updated at FPS
-socket.on("state", function(state) {
-  context.clearRect(0, 0, 1000, 600);
+socket.on("state", function (state) {
+    context.clearRect(0, 0, 1000, 600);
 
-  // console.log(socket.id);
-  /* Updates display of all players */
-  for (var id in state.players) {
-    var player = state.players[id];
-    context.beginPath();
-    context.save();
-    drawTank(player);
-    context.restore();
-    context.save();
-    drawTankStats(player);
-  }
-  
-  /* Updates the display of all projectiles */
-  for (var projId in state.projectiles) {
-      var projectile = state.projectiles[projId];
-      context.beginPath();
-      context.fillRect(projectile.x, projectile.y, 5, 5);
-  }
+    /* Updates display of all players */
+    for (var id in state.players) {
+        var player = state.players[id];
+        context.beginPath();
+        context.save();
+        drawTank(player);
+        context.restore();
+        context.save();
+        drawTankStats(player);
+    }
 
-  // Emitting here would sync with the current FPS from server,
-  // but may see some issues with the database
-  // socket.emit('update projectile');
-  socket.emit("update tank", movement);
-  // socket.emit('update dead players');
+    /* Updates the display of all projectiles */
+    for (var projId in state.projectiles) {
+        var projectile = state.projectiles[projId];
+        context.beginPath();
+        context.fillRect(projectile.x, projectile.y, 5, 5);
+    }
+
+    // Emitting here would sync with the current FPS from server,
+    // but may see some issues with the database
+    // socket.emit('update projectile');
+    socket.emit("update tank", movement);
+    // socket.emit('update dead players');
 });
 
 socket.on("show dead modal", function (finishedPlayer) {

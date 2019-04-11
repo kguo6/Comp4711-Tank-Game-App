@@ -41,6 +41,13 @@ html, body {
   margin-right: auto;
 }
 
+#error-msg {
+  color: red;
+  display: none;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.9em;
+}
+
 #instruction {
   width: 100%;
 }
