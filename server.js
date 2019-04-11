@@ -47,6 +47,12 @@ const users = require("./routes/user_routes");
 app.use("/social_media", socials);
 app.use("/user", users);
 
+// app.use(function(request, response){
+//   if(!request.secure){
+//     response.redirect("https://" + request.headers.host + request.url);
+//   }
+// });
+
 // Routing - GUEST
 app.get("/", function(request, response) {
   response.sendFile(path.join(__dirname, "./static/index.html"));
@@ -99,8 +105,9 @@ mongo.connect(
           achievement = new Achievement(
             "Bounty Hunter",
             "Destroying 5 Tanks on Call of Tanks",
-            5
+            5,
             //imageURL
+            "https://i.imgur.com/uxW5jIA.jpg"
           );
           achievements.push(achievement);
 
@@ -108,8 +115,9 @@ mongo.connect(
           achievement = new Achievement(
             "Executioner",
             "Destroying 10 Tanks on Call of Tanks",
-            10
+            10,
             //imageURL
+            "https://i.imgur.com/VDGfhXd.jpg"
           );
           achievements.push(achievement);
 
@@ -117,8 +125,9 @@ mongo.connect(
           achievement = new Achievement(
             "Collosus",
             "Destroying 20 Tanks on Call of Tanks",
-            20
+            20,
             //imageURL
+            "https://i.imgur.com/qaMKgJ2.jpg"
           );
           achievements.push(achievement);
 
@@ -126,8 +135,9 @@ mongo.connect(
           achievement = new Achievement(
             "Terminator",
             "Destroying 50 Tanks on Call of Tanks",
-            50
+            50,
             //imageURL
+            "https://i.imgur.com/s2p3BQy.jpg"
           );
           achievements.push(achievement);
 
@@ -135,8 +145,9 @@ mongo.connect(
           achievement = new Achievement(
             "Big Daddy",
             "Destroying 100 Tanks on Call of Tanks",
-            100
+            100,
             //imageURL
+            "https://i.imgur.com/59u5qqf.jpg"
           );
           achievements.push(achievement);
 
@@ -144,8 +155,9 @@ mongo.connect(
           achievement = new Achievement(
             "Godlike",
             "Destroying 500 Tanks on Call of Tanks",
-            500
+            500,
             //imageURL
+            "https://i.imgur.com/v899kL2.jpg"
           );
           achievements.push(achievement);
 
@@ -186,14 +198,14 @@ io.on("connection", function(socket) {
     players[socket.id] = Player.createNewPlayer(socket.id, name);
     leaderboard.addPlayer(players[socket.id]);
     leaderboard.sortPlayers();
-    io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+    // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
   });
 
   socket.on("remove player", function(id) {
     if (leaderboard.playerExists(id)) {
       leaderboard.removePlayer(players[id]);
       leaderboard.sortPlayers();
-      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
     }
     delete players[id];
   });
@@ -202,7 +214,7 @@ io.on("connection", function(socket) {
     if (leaderboard.playerExists(socket.id)) {
       leaderboard.removePlayer(players[socket.id]);
       leaderboard.sortPlayers();
-      io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+      // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
     }
     delete players[socket.id];
   });
@@ -233,7 +245,6 @@ io.on("connection", function(socket) {
     }
 
     if(data.shoot) {
-      var player = players[socket.id] || {};
       if (!projectiles[socket.id]) {
         projectiles[socket.id] = {
           player: socket.id,
@@ -254,7 +265,7 @@ io.on("connection", function(socket) {
       if (leaderboard.playerExists(socket.id)) {
         leaderboard.removePlayer(players[socket.id]);
         leaderboard.sortPlayers();
-        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
       }
       socket.emit('show dead modal', player);
       delete players[socket.id];
@@ -291,7 +302,7 @@ io.on("connection", function(socket) {
 
   });
 
-  socket.on('update projectile', function() {
+  // socket.on('update projectile', function() {
     
       // for(let projectileId in projectiles){
       //   let projectile = projectiles[projectileId];
@@ -317,33 +328,33 @@ io.on("connection", function(socket) {
       // }
 
         // console.log(projectiles[socket.id]);
-        if(projectiles[socket.id] != undefined) {
-          let projectile = projectiles[socket.id];
+        // if(projectiles[socket.id] != undefined) {
+        //   let projectile = projectiles[socket.id];
 
-          for(let playerId in players) {
-            if(playerId != socket.id) { // Ignore if it is the current player
-              let player = players[playerId];
-              if(projectile.id != playerId &&
-                checkCollision(player.x, player.y, player.hitbox,
-                              projectile.x, projectile.y, projectile.hitbox)) {
-                tankHit(playerId, socket.id);
-              }
-            }
-          }
+        //   for(let playerId in players) {
+        //     if(playerId != socket.id) { // Ignore if it is the current player
+        //       let player = players[playerId];
+        //       if(projectile.id != playerId &&
+        //         checkCollision(player.x, player.y, player.hitbox,
+        //                       projectile.x, projectile.y, projectile.hitbox)) {
+        //         tankHit(playerId, socket.id);
+        //       }
+        //     }
+        //   }
 
-          if(projectiles[socket.id]) {
-            if(projectile.distance < projectile.max_distance){
-              projectile.x += projectile.xvel;
-              projectile.y += projectile.yvel;
-              projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
-            } else {
-              delete projectiles[projectile.player];
-            }
-          }
-        }
+        //   if(projectiles[socket.id]) {
+        //     if(projectile.distance < projectile.max_distance){
+        //       projectile.x += projectile.xvel;
+        //       projectile.y += projectile.yvel;
+        //       projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
+        //     } else {
+        //       delete projectiles[projectile.player];
+        //     }
+        //   }
+        // }
         // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
 
-  });
+  // });
 
   // socket.on('update dead players', function() {
   //   for(let playerId in players) {
@@ -368,7 +379,7 @@ io.on("connection", function(socket) {
       if (leaderboard.playerExists(deadPlayerId)) {
         leaderboard.removePlayer(players[deadPlayerId]);
         leaderboard.sortPlayers();
-        io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
       }
       delete players[deadPlayerId];
     }
@@ -377,7 +388,7 @@ io.on("connection", function(socket) {
 
 /* Game updates the state of all players at a rate of FPS */
 setInterval(function() {
-  io.sockets.emit("state", { players, projectiles });
+  io.sockets.emit("state", { players, projectiles, leaderboard });
 }, 1000 / FPS);
 
 
@@ -391,8 +402,8 @@ setInterval(function() {
  */
 function tankHit(playerId, projectileId) {
   delete projectiles[projectileId]; // Delete Projectile
-  console.log(playerId + " was hit!");
-  console.log("projectId:" + projectileId);
+  // console.log(playerId + " was hit!");
+  // console.log("projectId:" + projectileId);
   // If target exists, they take damage
   if(players[playerId]){ 
     players[playerId].hp -= 1;

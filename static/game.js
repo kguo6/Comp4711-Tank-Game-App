@@ -100,7 +100,7 @@ guestLoginBtn.addEventListener("click", () => {
 
 // Core app login button
 coreLoginBtn.addEventListener("click", () => {
-    
+
     name = document.getElementById("core-username").value;
     let email = document.getElementById("core-email").value;
     let pw = hashCode(document.getElementById("core-pw").value);
@@ -348,6 +348,11 @@ image.src = "./assets/images/tank.png";
 socket.on("state", function (state) {
     context.clearRect(0, 0, 1000, 600);
 
+    for (var projId in state.projectiles) {
+        var projectile = state.projectiles[projId];
+        context.beginPath();
+        context.fillRect(projectile.x, projectile.y, 5, 5);
+    }
     /* Updates display of all players */
     for (var id in state.players) {
         var player = state.players[id];
@@ -360,11 +365,9 @@ socket.on("state", function (state) {
     }
 
     /* Updates the display of all projectiles */
-    for (var projId in state.projectiles) {
-        var projectile = state.projectiles[projId];
-        context.beginPath();
-        context.fillRect(projectile.x, projectile.y, 5, 5);
-    }
+
+
+    updateScoreboard(state.leaderboard.players);
 
     // Emitting here would sync with the current FPS from server,
     // but may see some issues with the database
@@ -381,7 +384,8 @@ socket.on("show dead modal", function (finishedPlayer) {
     modal.style.display = "block";
 });
 
-socket.on("update scoreboard", function (players) {
+// socket.on("update scoreboard", function (players) {
+function updateScoreboard(players) {
     let table = document.createElement("table");
     table.id = "scoreboard";
 
@@ -431,7 +435,7 @@ socket.on("update scoreboard", function (players) {
     }
 
     document.getElementById("scoreboard").replaceWith(table);
-});
+}
 
 /*              Helper Functions                */
 /*                                              */
