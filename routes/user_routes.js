@@ -30,7 +30,7 @@ router.post("/track_user", function (request, response) {
         .collection(collectionUser)
         .findOne(searchUser, function (err, result) {
             if (result == null) {
-                const newUser = new User(id, 0);
+                const newUser = new User(id, 0, []);
                 request.app
                     .get("DBO")
                     .collection(collectionUser)

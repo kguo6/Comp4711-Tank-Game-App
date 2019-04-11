@@ -1,5 +1,5 @@
 class User {
-  constructor(id, name, kills, achievements) {
+  constructor(id, kills, achievements) {
     this.id = id;
     this.kills = kills;
     this.achievements = achievements;

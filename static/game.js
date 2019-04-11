@@ -7,14 +7,6 @@ const CORE_APPLICATION_API_KEY = "tM4iRo8tujX6d1RyEP9DcdhPWbpocX";
 const CORE_APPLICATION_GET_TOKEN = "https://us-central1-coreapicomp4711.cloudfunctions.net/api/get_token";
 const CORE_APPLICATION_LOGIN = "https://us-central1-coreapicomp4711.cloudfunctions.net/api/verify_user";
 
-socket.on("message", function (data) {
-    console.log(data);
-});
-
-socket.on("name", function (data) {
-    // data is a parameter containing whatever data was sent
-});
-
 let movement = {
     up: false,
     down: false,
@@ -284,7 +276,6 @@ fireBtn.addEventListener("touchend", () => {
 
 // Play again button
 document.getElementById("play-again").addEventListener("click", () => {
-    // TODO: wrap-up game logic
     location.reload();
 });
 
@@ -330,13 +321,6 @@ document.getElementById("slack-button").addEventListener("click", () => {
     }
 });
 
-// Updates all game events at a rate of FPS, may not be good
-// setInterval(function () {
-// socket.emit('update tank', movement);
-// socket.emit('update projectile');
-// socket.emit('update dead players');
-// }, 1000 / FPS);
-
 // Set canvas dimensions
 var canvas = document.getElementById("canvas");
 canvas.width = 1000;
@@ -358,6 +342,7 @@ socket.on("state", function (state) {
         context.beginPath();
         context.fillRect(projectile.x, projectile.y, 5, 5);
     }
+
     /* Updates display of all players */
     for (var id in state.players) {
         var player = state.players[id];
@@ -369,27 +354,21 @@ socket.on("state", function (state) {
         drawTankStats(player);
     }
 
-    /* Updates the display of all projectiles */
-
-
     updateScoreboard(state.leaderboard.players);
 
     // Emitting here would sync with the current FPS from server,
     // but may see some issues with the database
-    // socket.emit('update projectile');
     socket.emit("update tank", movement);
-    // socket.emit('update dead players');
 });
 
+// Show endgame modal
 socket.on("show dead modal", function (finishedPlayer) {
     explosion.play(); // Play explosion on death
     currentPlayer = finishedPlayer;
-    // TODO: sometimes this msg is displayed before currentPlayer is set, causing exception
     document.getElementById("modal-msg").innerHTML = `Better luck next time ${currentPlayer.name}! Your score was ${currentPlayer.kills}!`;
     modal.style.display = "block";
 });
 
-// socket.on("update scoreboard", function (players) {
 function updateScoreboard(players) {
     let table = document.createElement("table");
     table.id = "scoreboard";
@@ -417,7 +396,6 @@ function updateScoreboard(players) {
     tHeaderRow.appendChild(scoreTableHeader);
 
     // CONSTRUCT TABLE BODY
-
     for (let i = 0; i < players.length; i++) {
         let tr = document.createElement("tr");
 
@@ -469,11 +447,11 @@ function drawTankStats(player) {
     // Draw Hp bar
     let currentHp = player.hp / 3;
     context.fillStyle = "red";
-    context.fillRect(player.x, player.y + player.height + 12, player.width, 5);
+    context.fillRect(player.x, player.y + player.height + 15, player.width, 5);
     context.fillStyle = "LightGreen";
     context.fillRect(
         player.x,
-        player.y + player.height + 12,
+        player.y + player.height + 15,
         player.width * currentHp,
         5
     );
@@ -482,7 +460,7 @@ function drawTankStats(player) {
     context.fillStyle = "black";
     context.font = "12px Arial";
     context.textAlign = "center";
-    context.fillText(player.name, player.x + 15, player.y - 12);
+    context.fillText(player.name, player.x + 15, player.y - 15);
 }
 
 function getMousePos(canvas, evt) {

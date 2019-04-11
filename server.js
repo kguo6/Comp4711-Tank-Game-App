@@ -47,361 +47,249 @@ const users = require("./routes/user_routes");
 app.use("/social_media", socials);
 app.use("/user", users);
 
-// app.use(function(request, response){
-//   if(!request.secure){
-//     response.redirect("https://" + request.headers.host + request.url);
-//   }
-// });
-
 // Routing - GUEST
-app.get("/", function(request, response) {
-  response.sendFile(path.join(__dirname, "./static/index.html"));
+app.get("/", function (request, response) {
+    response.sendFile(path.join(__dirname, "./static/index.html"));
 });
 
 // Set db connection options
 let options = {
-  useNewUrlParser: true,
-  reconnectTries: 60,
-  reconnectInterval: 1000
+    useNewUrlParser: true,
+    reconnectTries: 60,
+    reconnectInterval: 1000
 };
 
 // Establish db connection
 mongo.connect(
-  `mongodb+srv://${app.get("DB_ADMIN")}:${app.get(
-    "DB_ADMIN_PASSWORD"
-  )}@cluster0-3rcql.mongodb.net/${app.get(
-    "DB"
-  )}?retryWrites=true&authMechanism=SCRAM-SHA-1&authSource=admin`,
-  options,
-  (err, client) => {
-    if (err) {
-      console.log(err.stack);
-      process.exit(1);
-    }
-
-    // Set DB Object
-    app.set("DBO", client.db(app.get("DB")));
-
-    app
-      .get("DBO")
-      .listCollections()
-      .toArray(function(err, collections) {
-        //collections = [{"name": "coll1"}, {"name": "coll2"}]
-        let found = false;
-
-        if (collections.length > 0) {
-          for (var i = 0; i < collections.length; i++) {
-            if (collections[i].name === "achievements") {
-              found = true;
-            }
-          }
+    `mongodb+srv://${app.get("DB_ADMIN")}:${app.get(
+        "DB_ADMIN_PASSWORD"
+    )}@cluster0-3rcql.mongodb.net/${app.get(
+        "DB"
+    )}?retryWrites=true&authMechanism=SCRAM-SHA-1&authSource=admin`,
+    options,
+    (err, client) => {
+        if (err) {
+            console.log(err.stack);
+            process.exit(1);
         }
 
-        // Create Achievement Collection if Not Found
-        if (!found) {
-          achievements = [];
+        // Set DB Object
+        app.set("DBO", client.db(app.get("DB")));
 
-          // Achievement 5 Kill
-          achievement = new Achievement(
-            "Bounty Hunter",
-            "Destroying 5 Tanks on Call of Tanks",
-            5,
-            //imageURL
-            "https://i.imgur.com/uxW5jIA.jpg"
-          );
-          achievements.push(achievement);
-
-          // Achievment 10 Kill
-          achievement = new Achievement(
-            "Executioner",
-            "Destroying 10 Tanks on Call of Tanks",
-            10,
-            //imageURL
-            "https://i.imgur.com/VDGfhXd.jpg"
-          );
-          achievements.push(achievement);
-
-          // Achivement 20 Kill
-          achievement = new Achievement(
-            "Collosus",
-            "Destroying 20 Tanks on Call of Tanks",
-            20,
-            //imageURL
-            "https://i.imgur.com/qaMKgJ2.jpg"
-          );
-          achievements.push(achievement);
-
-          // Achievement 50 Kill
-          achievement = new Achievement(
-            "Terminator",
-            "Destroying 50 Tanks on Call of Tanks",
-            50,
-            //imageURL
-            "https://i.imgur.com/s2p3BQy.jpg"
-          );
-          achievements.push(achievement);
-
-          // Achievement 100 Kill
-          achievement = new Achievement(
-            "Big Daddy",
-            "Destroying 100 Tanks on Call of Tanks",
-            100,
-            //imageURL
-            "https://i.imgur.com/59u5qqf.jpg"
-          );
-          achievements.push(achievement);
-
-          // Achievement 500 Kill
-          achievement = new Achievement(
-            "Godlike",
-            "Destroying 500 Tanks on Call of Tanks",
-            500,
-            //imageURL
-            "https://i.imgur.com/v899kL2.jpg"
-          );
-          achievements.push(achievement);
-
-          app
+        app
             .get("DBO")
-            .collection(collectionAchievements)
-            .insertMany(achievements, (err, result) => {
-              if (err) {
-                console.log(err);
-              }
-            });
-        }
-      });
+            .listCollections()
+            .toArray(function (err, collections) {
+                //collections = [{"name": "coll1"}, {"name": "coll2"}]
+                let found = false;
 
-    // example
-    // app.get('DBO').collection('scores').insertOne({ name: 'kevin', score: 42 }, (err, result) => {
-    //     if (err) {
-    //         console.log(err);
-    //     }
-    // });
-  }
+                if (collections.length > 0) {
+                    for (var i = 0; i < collections.length; i++) {
+                        if (collections[i].name === "achievements") {
+                            found = true;
+                        }
+                    }
+                }
+
+                // Create Achievement Collection if Not Found
+                if (!found) {
+                    achievements = [];
+
+                    // Achievement 5 Kill
+                    achievement = new Achievement(
+                        "Bounty Hunter",
+                        "Destroying 5 Tanks on Call of Tanks",
+                        5,
+                        //imageURL
+                        "https://i.imgur.com/uxW5jIA.jpg"
+                    );
+                    achievements.push(achievement);
+
+                    // Achievment 10 Kill
+                    achievement = new Achievement(
+                        "Executioner",
+                        "Destroying 10 Tanks on Call of Tanks",
+                        10,
+                        //imageURL
+                        "https://i.imgur.com/VDGfhXd.jpg"
+                    );
+                    achievements.push(achievement);
+
+                    // Achivement 20 Kill
+                    achievement = new Achievement(
+                        "Collosus",
+                        "Destroying 20 Tanks on Call of Tanks",
+                        20,
+                        //imageURL
+                        "https://i.imgur.com/qaMKgJ2.jpg"
+                    );
+                    achievements.push(achievement);
+
+                    // Achievement 50 Kill
+                    achievement = new Achievement(
+                        "Terminator",
+                        "Destroying 50 Tanks on Call of Tanks",
+                        50,
+                        //imageURL
+                        "https://i.imgur.com/s2p3BQy.jpg"
+                    );
+                    achievements.push(achievement);
+
+                    // Achievement 100 Kill
+                    achievement = new Achievement(
+                        "Big Daddy",
+                        "Destroying 100 Tanks on Call of Tanks",
+                        100,
+                        //imageURL
+                        "https://i.imgur.com/59u5qqf.jpg"
+                    );
+                    achievements.push(achievement);
+
+                    // Achievement 500 Kill
+                    achievement = new Achievement(
+                        "Godlike",
+                        "Destroying 500 Tanks on Call of Tanks",
+                        500,
+                        //imageURL
+                        "https://i.imgur.com/v899kL2.jpg"
+                    );
+                    achievements.push(achievement);
+
+                    app
+                        .get("DBO")
+                        .collection(collectionAchievements)
+                        .insertMany(achievements, (err, result) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                        });
+                }
+            });
+    }
 );
 
 // Starts the server
-server.listen(app.get("PORT"), function() {
-  console.log(`Starting server on port ${app.get("PORT")}...`);
+server.listen(app.get("PORT"), function () {
+    console.log(`Starting server on port ${app.get("PORT")}...`);
 });
-
-// setInterval(function() {
-//     io.sockets.emit('message', 'hi!');
-//   }, 1000);
 
 var players = {};
 var projectiles = {};
 
-io.on("connection", function(socket) {
-  socket.on("new player", function(name, externalId) {
-    players[socket.id] = Player.createNewPlayer(socket.id, name, externalId);
-    leaderboard.addPlayer(players[socket.id]);
-    leaderboard.sortPlayers();
-    // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
-  });
-
-  socket.on("remove player", function(id) {
-    if (leaderboard.playerExists(id)) {
-      leaderboard.removePlayer(players[id]);
-      leaderboard.sortPlayers();
-      // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
-    }
-    if (players[id].external_id != null) {
-        updatePlayerProfile(players[id].external_id, players[id].kills);
-    }
-    delete players[id];
-  });
-
-  socket.on("disconnect", function() {
-    if (leaderboard.playerExists(socket.id)) {
-      leaderboard.removePlayer(players[socket.id]);
-      leaderboard.sortPlayers();
-      // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
-    }
-    if (players[socket.id].external_id != null) {
-        updatePlayerProfile(players[socket.id].external_id, players[socket.id].kills);
-    }
-    delete players[socket.id];
-  });
-
-  // Tank movement and life status
-  socket.on('update tank', function(data) {
-    var player = players[socket.id] || {};
-
-    if (data.left) {
-      // player.x -= 5;
-      player.rotate -= (player.speed * Math.PI) / 180;
-    }
-    if (data.right) {
-      // player.x += 5;
-      player.rotate += (player.speed * Math.PI) / 180;
-    }
-
-    if (data.up) {
-      player.x += player.speed * Math.cos(player.rotate);
-      player.y += player.speed * Math.sin(player.rotate);
-      checkInBounds(player.x, player.y, player.id);
-    }
-
-    if (data.down) {
-      player.x -= player.speed * Math.cos(player.rotate);
-      player.y -= player.speed * Math.sin(player.rotate);
-      checkInBounds(player.x, player.y, player.id);
-    }
-
-    if(data.shoot) {
-      if (!projectiles[socket.id]) {
-        projectiles[socket.id] = {
-          player: socket.id,
-          hitbox: 10,
-          x: player.x + player.width / 2,
-          y: player.y + player.height / 2 - 2.5,
-          xvel: player.shot_speed * Math.cos(player.rotate),
-          yvel: player.shot_speed * Math.sin(player.rotate),
-          distance: 0,
-          max_distance: player.range
-        };
-      }
-    }
-
-    if(projectiles[socket.id] != undefined) {
-      let projectile = projectiles[socket.id];
-
-      for(let playerId in players) {
-        if(playerId != socket.id) { // Ignore if it is the current player
-          let player = players[playerId];
-          if(projectile.id != playerId &&
-            checkCollision(player.x, player.y, player.hitbox,
-                          projectile.x, projectile.y, projectile.hitbox)) {
-            tankHit(playerId, socket.id);
-          }
-        }
-      }
-
-      if(projectiles[socket.id]) {
-        if(projectile.distance < projectile.max_distance){
-          projectile.x += projectile.xvel;
-          projectile.y += projectile.yvel;
-          projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
-        } else {
-          delete projectiles[projectile.player];
-        }
-      }
-    }
-
-    // Check if the player has died
-    if(player.hp <= 0) {
-        // Update player stats if player is logged in from core app 
-        if (player.external_id != null) {
-            updatePlayerProfile(player.external_id, player.kills);
-        }
-
-        // Remove Player and update leaderboard
-        if (leaderboard.playerExists(socket.id)) {
-        leaderboard.removePlayer(players[socket.id]);
+io.on("connection", function (socket) {
+    socket.on("new player", function (name, externalId) {
+        players[socket.id] = Player.createNewPlayer(socket.id, name, externalId);
+        leaderboard.addPlayer(players[socket.id]);
         leaderboard.sortPlayers();
-        // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+    });
+
+    socket.on("remove player", function (id) {
+        if (leaderboard.playerExists(id)) {
+            leaderboard.removePlayer(players[id]);
+            leaderboard.sortPlayers();
         }
-        socket.emit('show dead modal', player);
+        if (players[id] && players[id].external_id != null && players[id].kills > 0) {
+            updatePlayerProfile(players[id].external_id, players[id].kills);
+        }
+        delete players[id];
+    });
+
+    socket.on("disconnect", function () {
+        if (leaderboard.playerExists(socket.id)) {
+            leaderboard.removePlayer(players[socket.id]);
+            leaderboard.sortPlayers();
+        }
+        if (players[socket.id] && players[socket.id].external_id != null && players[socket.id].kills > 0) {
+            updatePlayerProfile(players[socket.id].external_id, players[socket.id].kills);
+        }
         delete players[socket.id];
-    }
-});
+    });
 
-  // Projectile
-//   socket.on('shoot', function() {
+    // Tank movement and life status
+    socket.on('update tank', function (data) {
+        var player = players[socket.id] || {};
 
-//   });
+        if (data.left) {
+            player.rotate -= (player.speed * Math.PI) / 180;
+        }
+        if (data.right) {
+            player.rotate += (player.speed * Math.PI) / 180;
+        }
 
-  // socket.on('update projectile', function() {
-    
-      // for(let projectileId in projectiles){
-      //   let projectile = projectiles[projectileId];
+        if (data.up) {
+            player.x += player.speed * Math.cos(player.rotate);
+            player.y += player.speed * Math.sin(player.rotate);
+            checkInBounds(player.x, player.y, player.id);
+        }
 
-      //   if(projectile.distance < projectile.max_distance){
-      //     projectile.x += projectile.xvel;
-      //     projectile.y += projectile.yvel;
-      //     projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
-      //   } else {
-      //     delete projectiles[projectile.player];
-      //     continue;
-      //   }
+        if (data.down) {
+            player.x -= player.speed * Math.cos(player.rotate);
+            player.y -= player.speed * Math.sin(player.rotate);
+            checkInBounds(player.x, player.y, player.id);
+        }
 
-      //   for(let playerId in players) {
-      //     let player = players[playerId];
-      //     if(projectileId != playerId &&
-      //       checkCollision(player.x, player.y, player.hitbox,
-      //                     projectile.x, projectile.y, projectile.hitbox)) {
-      //       tankHit(playerId, projectileId);
-      //     }
-      //   }
-      //   // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
-      // }
+        if (data.shoot) {
+            if (!projectiles[socket.id]) {
+                projectiles[socket.id] = {
+                    player: socket.id,
+                    hitbox: 10,
+                    x: player.x + player.width / 2,
+                    y: player.y + player.height / 2 - 2.5,
+                    xvel: player.shot_speed * Math.cos(player.rotate),
+                    yvel: player.shot_speed * Math.sin(player.rotate),
+                    distance: 0,
+                    max_distance: player.range
+                };
+            }
+        }
 
-        // console.log(projectiles[socket.id]);
-        // if(projectiles[socket.id] != undefined) {
-        //   let projectile = projectiles[socket.id];
+        if (projectiles[socket.id] != undefined) {
+            let projectile = projectiles[socket.id];
 
-        //   for(let playerId in players) {
-        //     if(playerId != socket.id) { // Ignore if it is the current player
-        //       let player = players[playerId];
-        //       if(projectile.id != playerId &&
-        //         checkCollision(player.x, player.y, player.hitbox,
-        //                       projectile.x, projectile.y, projectile.hitbox)) {
-        //         tankHit(playerId, socket.id);
-        //       }
-        //     }
-        //   }
+            for (let playerId in players) {
+                if (playerId != socket.id) { // Ignore if it is the current player
+                    let player = players[playerId];
+                    if (projectile.id != playerId &&
+                        checkCollision(player.x, player.y, player.hitbox,
+                            projectile.x, projectile.y, projectile.hitbox)) {
+                        tankHit(playerId, socket.id);
+                    }
+                }
+            }
 
-        //   if(projectiles[socket.id]) {
-        //     if(projectile.distance < projectile.max_distance){
-        //       projectile.x += projectile.xvel;
-        //       projectile.y += projectile.yvel;
-        //       projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
-        //     } else {
-        //       delete projectiles[projectile.player];
-        //     }
-        //   }
-        // }
-        // console.log(Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel))
+            if (projectiles[socket.id]) {
+                if (projectile.distance < projectile.max_distance) {
+                    projectile.x += projectile.xvel;
+                    projectile.y += projectile.yvel;
+                    projectile.distance += Math.sqrt(projectile.xvel * projectile.xvel + projectile.yvel * projectile.yvel);
+                } else {
+                    delete projectiles[projectile.player];
+                }
+            }
+        }
 
-  // });
+        // Check if the player has died
+        if (player.hp <= 0) {
+            // Update player stats if player is logged in from core app 
+            if (player.external_id != null && player.kills > 0) {
+                updatePlayerProfile(player.external_id, player.kills);
+            }
 
-  // socket.on('update dead players', function() {
-  //   for(let playerId in players) {
-
-  //     if(playerId === socket.id) {
-  //       if(players[playerId].hp <= 0) {
-
-  //         delete players[playerId];
-  //         socket.emit('show dead modal');
-  //       }
-  //     }
-  //   }
-  // })
-
-//   // Delete player and show dead modal
-//   socket.on("player died", function(deadPlayerId) {
-//     if (socket.id === deadPlayerId) {
-//       let playerCopy = players[deadPlayerId];
-
-
-//       socket.emit("show dead modal", playerCopy);
-
-//       // Remove Player and update leaderboard
-//       if (leaderboard.playerExists(deadPlayerId)) {
-//         leaderboard.removePlayer(players[deadPlayerId]);
-//         leaderboard.sortPlayers();
-//         // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
-//       }
-//       delete players[deadPlayerId];
-//     }
-//   });
+            // Remove Player and update leaderboard
+            if (leaderboard.playerExists(socket.id)) {
+                leaderboard.removePlayer(players[socket.id]);
+                leaderboard.sortPlayers();
+                // io.sockets.emit("update scoreboard", leaderboard.getPlayers());
+            }
+            socket.emit('show dead modal', player);
+            delete players[socket.id];
+        }
+    });
 });
 
 /* Game updates the state of all players at a rate of FPS */
-setInterval(function() {
-  io.sockets.emit("state", { players, projectiles, leaderboard });
+setInterval(function () {
+    io.sockets.emit("state", { players, projectiles, leaderboard });
 }, 1000 / FPS);
 
 // UPDATE USER WHEN GAME ENDS
@@ -452,19 +340,18 @@ function updatePlayerProfile(id, kills) {
  * @param {*} projectileId Id of the projectile's player
  */
 function tankHit(playerId, projectileId) {
-  delete projectiles[projectileId]; // Delete Projectile
-  // console.log(playerId + " was hit!");
-  // console.log("projectId:" + projectileId);
-  // If target exists, they take damage
-  if(players[playerId]){ 
-    players[playerId].hp -= 1;
-    // console.log("Damage done: " + 1);
-    // If target died from damage, increment shooter's kill counter
-    if(players[playerId].hp == 0) {
-      players[projectileId].kills += 1;
-      leaderboard.updatePlayer(players[projectileId]);
+    delete projectiles[projectileId]; // Delete Projectile
+
+    // If target exists, they take damage
+    if (players[playerId]) {
+        players[playerId].hp -= 1;
+
+        // If target died from damage, increment shooter's kill counter
+        if (players[playerId].hp == 0) {
+            players[projectileId].kills += 1;
+            leaderboard.updatePlayer(players[projectileId]);
+        }
     }
-  }
 }
 
 /**
@@ -477,9 +364,9 @@ function tankHit(playerId, projectileId) {
  * @param {*} shotHitBox hitbox(radius) of the projectile
  */
 function checkCollision(playerX, playerY, playerHitBox,
-  shotX, shotY, shotHitBox) {
-let minDist = playerHitBox + shotHitBox;
-return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
+    shotX, shotY, shotHitBox) {
+    let minDist = playerHitBox + shotHitBox;
+    return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
 };
 
 /**
@@ -489,8 +376,8 @@ return getEuclideanDist(playerX, playerY, shotX, shotY) < (minDist * minDist);
 * @param {*} x2 x coordinate of the 2nd point
 * @param {*} y2 y coordinate of the 2nd point
 */
-function getEuclideanDist(x1, y1, x2, y2,) {
-return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
+function getEuclideanDist(x1, y1, x2, y2, ) {
+    return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
 }
 
 /**
@@ -500,16 +387,16 @@ return ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2));
  * @param {*} playerId SocketId of the player
  */
 function checkInBounds(x, y, playerId) {
-  if(x < CANVAS_MIN) {
-    players[playerId].x = CANVAS_MIN;
-  }
-  if(x > CANVAS_WIDTH) {
-    players[playerId].x = CANVAS_WIDTH;
-  }
-  if(y < CANVAS_MIN) {
-    players[playerId].y = CANVAS_MIN;
-  }
-  if(y > CANVAS_HEIGHT) {
-    players[playerId].y = CANVAS_HEIGHT;
-  }
+    if (x < CANVAS_MIN) {
+        players[playerId].x = CANVAS_MIN;
+    }
+    if (x > CANVAS_WIDTH) {
+        players[playerId].x = CANVAS_WIDTH;
+    }
+    if (y < CANVAS_MIN) {
+        players[playerId].y = CANVAS_MIN;
+    }
+    if (y > CANVAS_HEIGHT) {
+        players[playerId].y = CANVAS_HEIGHT;
+    }
 }

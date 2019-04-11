@@ -20,15 +20,14 @@ router.post('/postslack', (req, res) => {
     let score = req.body.score;
 
     axios.post(`https://hooks.slack.com/services/${PROJECT_RANDOM_CHANNEL}`, {
-        // TODO: update to production url
-        text: `${username} just got a high score of ${score}! Think you can beat them? Join the fight at http://kennyguo.com/static/`
+        text: `${username} just got a high score of ${score}! Think you can beat them? Join the fight at https://kennyguo.com/static/`
     })
         .then((result) => {
             if (result.status != 200) {
                 console.log(result.status, result);
                 res.status(result.status).send(result.statusText);
             } else {
-                res.redirect('http://kennyguo.com/static');
+                res.redirect('https://kennyguo.com/static');
             }
         })
         .catch((error) => {
