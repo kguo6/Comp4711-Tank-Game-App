@@ -1,0 +1,28 @@
+{
+  "name": "comp4711-tank-game-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kguo6/Comp4711-Tank-Game-App.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kguo6/Comp4711-Tank-Game-App/issues"
+  },
+  "homepage": "https://github.com/kguo6/Comp4711-Tank-Game-App#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongodb": "^3.2.2",
+    "nodemon": "^1.18.10",
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^2.2.0"
+  }
+}
