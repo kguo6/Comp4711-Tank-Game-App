@@ -171,11 +171,11 @@ td {
   background-color: #fefefe;
 }
 
-#slack-button {
+/* #slack-button {
   padding: 0 5px;
   height: 29px;
   width: 100px;
-}
+} */
 
 #socials {
   display: flex;

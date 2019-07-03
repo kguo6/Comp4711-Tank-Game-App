@@ -26,7 +26,8 @@ const CANVAS_WIDTH = 1000 - 15;
 const CANVAS_MIN = -15;
 
 // Set development port
-const port = process.argv[2] == "-development" ? 8888 : 80;
+// const port = process.argv[2] == "-development" ? 8888 : 80;
+const port = process.env.PORT || 3000;
 
 // App constants
 app.set("PORT", port);
@@ -41,10 +42,10 @@ app.use("/static", express.static(__dirname + "/static"));
 const leaderboard = new Leaderboard();
 
 // Register API routes
-const socials = require("./routes/social_media_routes");
+// const socials = require("./routes/social_media_routes");
 const users = require("./routes/user_routes");
 
-app.use("/social_media", socials);
+// app.use("/social_media", socials);
 app.use("/user", users);
 
 // Routing - GUEST

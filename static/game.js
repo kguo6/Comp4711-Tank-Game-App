@@ -299,27 +299,27 @@ playButton.addEventListener("click", () => {
 });
 
 // Add to Slack button
-document.getElementById("slack-button").addEventListener("click", () => {
-    if (currentPlayer) {
-        let username = currentPlayer.name;
-        let score = currentPlayer.kills;
+// document.getElementById("slack-button").addEventListener("click", () => {
+//     if (currentPlayer) {
+//         let username = currentPlayer.name;
+//         let score = currentPlayer.kills;
 
-        if (
-            username != null &&
-            username != undefined &&
-            score != null &&
-            score != undefined
-        ) {
-            let xhttp = new XMLHttpRequest();
-            xhttp.open("POST", "/social_media/postslack", true);
-            xhttp.setRequestHeader(
-                "Content-type",
-                "application/x-www-form-urlencoded"
-            );
-            xhttp.send(`username=${username}&score=${score}`);
-        }
-    }
-});
+//         if (
+//             username != null &&
+//             username != undefined &&
+//             score != null &&
+//             score != undefined
+//         ) {
+//             let xhttp = new XMLHttpRequest();
+//             xhttp.open("POST", "/social_media/postslack", true);
+//             xhttp.setRequestHeader(
+//                 "Content-type",
+//                 "application/x-www-form-urlencoded"
+//             );
+//             xhttp.send(`username=${username}&score=${score}`);
+//         }
+//     }
+// });
 
 // Set canvas dimensions
 var canvas = document.getElementById("canvas");
