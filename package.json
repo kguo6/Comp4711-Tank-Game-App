@@ -18,8 +18,8 @@
   "homepage": "https://github.com/kguo6/Comp4711-Tank-Game-App#readme",
   "dependencies": {
     "axios": "^0.18.0",
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4",
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
     "mongodb": "^3.2.2",
     "nodemon": "^1.18.10",
     "serve-favicon": "^2.5.0",
